@@ -1,11 +1,23 @@
 import wollok.game.*
-
-
+import personaje.*
+import controles.*
+ 
 program MiJuego {
-    game.title("Nombre de tu proyecto")
-    game.height(15)
-    game.width(15)
+    game.title("Prototipo de Movimiento Fino")
+    
+    
+    game.cellSize(10)
+    
+    
+    game.height(75)
+    game.width(125)
 
+    game.addVisual(personaje)
+    
+    configuracionControles.configurar()
+
+   
+    game.onTick(14, "bucleFisica", { personaje.actualizarFisica() })
 
     game.start()
 }
