@@ -64,4 +64,13 @@ object personaje {
         vx = 0.0
         vy = 0.0
     }
+
+    method chocarPared(){
+        vx = vx * -0.5 // hace que "rebote" con la pared
+    }
+
+    method chocarPiso(){
+        vy = 0
+    }
+
 }
