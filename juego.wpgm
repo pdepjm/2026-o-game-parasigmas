@@ -1,23 +1,33 @@
 import wollok.game.*
 import personaje.*
 import controles.*
+import obstaculos.*
  
-program MiJuego {
+program MiJuego { 
     game.title("Prototipo de Movimiento Fino")
     
     
     game.cellSize(10)
     
-    
-    game.height(75)
-    game.width(125)
+    game.height(15)
+    game.width(25)
 
     game.addVisual(personaje)
-    
+
+    const pinche1 = new Pinche(position = game.at(10, 0))
+    const pinche2 = new Pinche(position = game.at(11, 0))
+    const sierra1 = new Sierra(position = game.at(20, 5))
+
+    game.addVisual(pinche1)
+    game.addVisual(pinche2)
+    game.addVisual(sierra1)
+
+    game.onCollideDo(personaje, { elemento => elemento.chocar(personaje) }) //cuando el personaje choca con un obstaculo, se ejecuta el metodo chocar de ese obstaculo
+
     configuracionControles.configurar()
 
    
-    game.onTick(14, "bucleFisica", { personaje.actualizarFisica() })
+    game.onTick(50, "bucleFisica", { personaje.actualizarFisica() })
 
     game.start()
 }
