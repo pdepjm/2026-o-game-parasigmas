@@ -7,7 +7,7 @@ object personaje {
     var yReal = 25.0 
 
     var property position = game.at(25, 25) 
-    method image() = "cuadrado.png" 
+    method image() = "personaje.png" 
     
     var vx = 0.0 
     var vy = 0.0
@@ -17,7 +17,7 @@ object personaje {
     const aceleracionSuelo = 5.0
     const friccionSuelo = 0.9     // Es porcentaje, se mantiene igual
     const friccionAire = 0.95     // Es porcentaje, se mantiene igual
-    const impulsoSalto = 6.5     
+    const impulsoSalto = 7.5     
     const velMaximaX = 9.0       
     const nivelSuelo = 0         
 
