@@ -9,8 +9,8 @@ program MiJuego {
     game.cellSize(10)
     
     
-    game.height(75)
-    game.width(125)
+    game.height(150)
+    game.width(250)
 
     game.addVisual(personaje)
     
