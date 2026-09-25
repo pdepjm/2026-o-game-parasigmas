@@ -17,7 +17,7 @@ program MiJuego {
     configuracionControles.configurar()
 
    
-    game.onTick(14, "bucleFisica", { personaje.actualizarFisica() })
+    game.onTick(18, "bucleFisica", { personaje.actualizarFisica() })
 
     game.start()
 }

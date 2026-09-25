@@ -12,32 +12,54 @@ object personaje {
     var vx = 0.0 
     var vy = 0.0
 
+    var yendoDerecha = false
+    var yendoIzquierda = false
     
     const gravedad = -0.75       
-    const aceleracionSuelo = 5.0
-    const friccionSuelo = 0.9     // Es porcentaje, se mantiene igual
+    const aceleracionSuelo = 1.2
+    const aceleracionAire = 0.6
+    const friccionSuelo = 0.85     // Es porcentaje, se mantiene igual
     const friccionAire = 0.95     // Es porcentaje, se mantiene igual
     const impulsoSalto = 6.5     
     const velMaximaX = 9.0       
     const nivelSuelo = 0         
 
+    method avanzarDerecha() { yendoDerecha = true }
+    method frenarDerecha()   { yendoDerecha = false }
+
+    method avanzarIzquierda() { yendoIzquierda = true }
+    method frenarIzquierda()   { yendoIzquierda = false }
+
     method actualizarFisica() {
+        const accelActual = if (self.estaEnElSuelo()) aceleracionSuelo else aceleracionAire // Distintas para controlar mejor el personaje
         
+        //Movimiento lateral
+        if (yendoDerecha) {
+            vx = vx + accelActual
+        }
+        if (yendoIzquierda) {
+            vx = vx - accelActual
+        }
+
+        //Caida
         if (!self.estaEnElSuelo()) {
             vy = vy + gravedad
         }
-        
+
+        //Friccion de suelo/aire
         if (self.estaEnElSuelo()) {
             vx = vx * friccionSuelo
         } else {
             vx = vx * friccionAire
-        }
+        }   
         
         vx = vx.min(velMaximaX).max(velMaximaX * -1)
         
+        //Para actualizar posicion
         xReal = xReal + vx
         yReal = yReal + vy
         
+        //Colision con suelo
         if (yReal < nivelSuelo) {
             yReal = nivelSuelo
             vy = 0 
@@ -53,9 +75,6 @@ object personaje {
             vy = impulsoSalto
         }
     }
-    
-    method moverDerecha() { vx = vx + aceleracionSuelo }
-    method moverIzquierda() { vx = vx - aceleracionSuelo }
 
     method centrar() { 
         // Coordenadas escaladas por 5 (antes 15 y 10)
