@@ -1,5 +1,6 @@
 import wollok.game.*
 import niveles.*
+import personaje.*
 // Importar archivo con los objetos de jugador y meta
 
 describe "Tests de la base de niveles" {
@@ -12,7 +13,7 @@ describe "Tests de la base de niveles" {
     test "Al configurar el spawn, el jugador se ubica exactamente en la posicion inicial del nivel" {
         nivelPrueba.configurarSpawn()
         
-        assert.equals(game.at(2, 2), jugador.position())
+        assert.equals(game.at(2, 2), personaje.position())
     }
 
     test "Al configurar la meta, esta se ubica en la posicion designada" {

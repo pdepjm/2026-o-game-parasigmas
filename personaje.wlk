@@ -6,7 +6,7 @@ object personaje {
     var xReal = 25.0
     var yReal = 25.0 
 
-    var property position = game.at(25, 25) 
+    var property position = game.at(25, 25)
     method image() = "personaje.png" 
     
     var vx = 0.0 
@@ -82,6 +82,13 @@ object personaje {
         yReal = 50.0
         vx = 0.0
         vy = 0.0
+    }
+
+    method irA(nuevaPosicion) {
+        xReal = nuevaPosicion.x()
+        yReal = nuevaPosicion.y()
+        vx = 0
+        vy = 0
     }
 
     method chocarPared(){

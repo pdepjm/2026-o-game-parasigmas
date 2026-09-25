@@ -36,7 +36,7 @@ program MiJuego {
     game.addVisual(limiteD)
     game.addVisual(pasto)
 
-    game.onTick(50, "bucleFisica", { personaje.actualizarFisica() })
+    game.onTick(25, "bucleFisica", { personaje.actualizarFisica() })
 
     game.start()
 }

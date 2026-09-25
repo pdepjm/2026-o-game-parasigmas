@@ -1,4 +1,5 @@
 import wollok.game.*
+import personaje.*
 
 class Nivel {
     const posicionSpawn
@@ -12,15 +13,15 @@ class Nivel {
     }
 
     method configurarSpawn() {
-        jugador.position(posicionSpawn) // importar el objeto del jugador
-        game.addVisual(jugador)
+        personaje.irA(posicionSpawn) // importar el objeto del jugador
+        game.addVisual(personaje)
     }
 
     method configurarMeta() {
         meta.position(posicionMeta) // lo mismo para la meta
         game.addVisual(meta)
-        // agregar colisión con la meta
-        game.onCollideDo({ elementoQueChocaMeta => self.victoria() }) // esto si solo hay un jugador, si hay más de personaje que pueda moverse y tocar la meta, habría que cambiarlo
+        //agregar colisión con la meta
+        game.onCollideDo(meta, { elementoQueChocaMeta => self.victoria() }) // esto si solo hay un jugador, si hay más de personaje que pueda moverse y tocar la meta, habría que cambiarlo
     }
 
     method dibujarEntorno() {
@@ -32,4 +33,14 @@ class Nivel {
         game.addVisual(cartelVictoria)
         // acá podría ir logica para reiniciar el nivel o pasar al siguiente
     }
+}
+
+// TEMPORAL
+object meta {
+    var property position = game.at(0,0)
+    method image() = "" 
+}
+object cartelVictoria {
+    var property position = game.at(0,0)
+    method image() = ""
 }
