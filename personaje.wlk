@@ -2,7 +2,6 @@ import wollok.game.*
 
 object personaje {
     
-    
     var xReal = 25.0
     var yReal = 25.0 
 
@@ -21,8 +20,8 @@ object personaje {
     const friccionSuelo = 0.85     // Es porcentaje, se mantiene igual
     const friccionAire = 0.95     // Es porcentaje, se mantiene igual
     const impulsoSalto = 7.5     
-    const velMaximaX = 9.0       
-    const nivelSuelo = 0         
+    const velMaximaX = 3.0       
+    const nivelSuelo = 5         
 
     method avanzarDerecha() { yendoDerecha = true }
     method frenarDerecha()   { yendoDerecha = false }
@@ -99,4 +98,13 @@ object personaje {
         vy = 0
     }
 
+   method rebotarHaciaDerecha() {
+        xReal = xReal + 2.0 
+        vx = 0.0            
+    }
+
+    method rebotarHaciaIzquierda() {
+        xReal = xReal - 2.0 
+        vx = 0.0
+    }
 }

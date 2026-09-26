@@ -1,19 +1,26 @@
 import wollok.game.*
 
-class Pared {
+class Limite {
 
-    var property position 
+    var property position
+
+}
+
+class LimiteIzquierdo inherits Limite{
 
     method chocar(personaje) {
-        personaje.chocarPared()
+        personaje.rebotarHaciaDerecha()
     }
-
 }
 
-class Limite inherits Pared
-{
-    method image() = "paredInvisible.png"
+class LimiteDerecho inherits Limite{
+
+    method chocar(personaje) {
+        personaje.rebotarHaciaIzquierda()
+    }
 }
+
+
 
 class Piso {
 
@@ -31,8 +38,15 @@ class Pasto inherits Piso
 }
 
 
+object muroPrueba {
+    var property position = game.at(150, 0)
+    
+    method image() = "muro3.png" 
 
-
+    method chocar(personaje) {
+        personaje.rebotarHaciaIzquierda()
+    }
+}
 
 
 
