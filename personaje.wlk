@@ -23,6 +23,7 @@ object personaje {
     const velMaximaX = 3.0       
     const nivelSuelo = 5         
 
+    method velMaximaX() = velMaximaX // getter para constructor de niveles
     method avanzarDerecha() { yendoDerecha = true }
     method frenarDerecha()   { yendoDerecha = false }
 
@@ -99,12 +100,12 @@ object personaje {
     }
 
    method rebotarHaciaDerecha() {
-        xReal = xReal + 2.0 
+        xReal = xReal + 3.0 
         vx = 0.0            
     }
 
     method rebotarHaciaIzquierda() {
-        xReal = xReal - 2.0 
+        xReal = xReal - 3.0 
         vx = 0.0
     }
 }
