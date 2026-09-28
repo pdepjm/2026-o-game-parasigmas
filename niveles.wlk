@@ -35,12 +35,15 @@ class Nivel {
     }
 }
 
-// TEMPORAL
 object meta {
     var property position = game.at(0,0)
-    method image() = "" 
+    method image() = "meta.png" 
+    method chocar(personaje){
+        game.clear()
+        game.addVisual(cartelVictoria)
+}
 }
 object cartelVictoria {
-    var property position = game.at(0,0)
-    method image() = ""
+    var property position = game.at(20,10)
+    method image() = "victoria.png"
 }

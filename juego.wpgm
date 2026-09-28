@@ -3,6 +3,7 @@ import personaje.*
 import controles.*
 import obstaculos.*
 import paredesPiso.*
+import niveles.*
  
 program MiJuego { 
     game.title("Prototipo de Movimiento Fino")
@@ -33,6 +34,9 @@ program MiJuego {
     game.addVisual(muroPrueba)
 
     game.onTick(25, "bucleFisica", { personaje.actualizarFisica() })
+
+    meta.position(game.at(45, 1))
+    game.addVisual(meta)
 
     game.start()
 }
