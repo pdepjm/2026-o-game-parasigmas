@@ -3,13 +3,19 @@ import wollok.game.*
 object personaje {
     
     var xReal = 5.0
-    var yReal = 5.0 
+    var yReal = 5.0
+
+    method xReal() = xReal //getter para tests
+    method yReal() = yReal //getter para tests
 
     var property position = game.at(25, 25)
     method image() = "personaje.png" 
     
     var vx = 0.0 
     var vy = 0.0
+
+    method vx() = vx
+    method vy() = vy
 
     var yendoDerecha = false
     var yendoIzquierda = false
@@ -22,6 +28,10 @@ object personaje {
     const impulsoSalto = 1.5     
     const velMaximaX = 0.6       
     const nivelSuelo = 1         
+
+    method gravedad() = gravedad
+    method impulsoSalto() = impulsoSalto
+    method nivelSuelo() = nivelSuelo
 
     method velMaximaX() = velMaximaX 
     method avanzarDerecha() { yendoDerecha = true }
