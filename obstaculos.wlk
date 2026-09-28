@@ -12,7 +12,7 @@ class Obstaculo
 
 class Pinche inherits Obstaculo
 {
-    method image() = "pinche.png"
+    method image() = "pinchos.png"
 }
 
 class Sierra inherits Obstaculo

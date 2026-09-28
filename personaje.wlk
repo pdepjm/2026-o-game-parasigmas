@@ -94,8 +94,8 @@ object personaje {
     }
 
     method centrar() { 
-        xReal = 75.0
-        yReal = 50.0
+        xReal = 5.0
+        yReal = 5.0
         vx = 0.0
         vy = 0.0
     }

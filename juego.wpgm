@@ -14,13 +14,13 @@ program MiJuego {
 
     game.addVisual(personaje)
 
-    const pinche1 = new Pinche(position = game.at(10, 0))
-    const pinche2 = new Pinche(position = game.at(11, 0))
+    const pinche1 = new Pinche(position = game.at(10, 1))
+    const pinche2 = new Pinche(position = game.at(11, 1))
     const sierra1 = new Sierra(position = game.at(20, 5))
 
-    //game.addVisual(pinche1)
-    //game.addVisual(pinche2)
-    //game.addVisual(sierra1)
+    game.addVisual(pinche1)
+    game.addVisual(pinche2)
+    game.addVisual(sierra1)
 
     game.onCollideDo(personaje, { elemento => elemento.chocar(personaje) }) //cuando el personaje choca con un obstaculo, se ejecuta el metodo chocar de ese obstaculo
     configuracionControles.configurar()
