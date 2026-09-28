@@ -16,18 +16,6 @@ class ParedDerecha inherits Pared {
     }
 }
 
-object creadorDeHitboxes {
-    method crearParedDerecha(xInicio, xFin, y) {
-        (xInicio..xFin).forEach({ x => // el .. genera una lista de numeros enteros entre xInicio y xFin, incluyendolos, de forma que la pared tenga un grosor mayor a una casilla
-            game.addVisual(new ParedDerecha(position = game.at(x, y)))
-        })
-    }
-    method crearParedIzquierda(xInicio, xFin, y) {
-        (xInicio..xFin).forEach({ x => 
-            game.addVisual(new ParedIzquierda(position = game.at(x, y)))
-        })
-    }
-}
 
 class Piso {
     var property position
@@ -44,7 +32,7 @@ class Pasto inherits Piso
 
 
 object muroPrueba {
-    var property position = game.at(150, 5)
+    var property position = game.at(30, 1)
     
     method image() = "muro3.png" 
 

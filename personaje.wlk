@@ -2,8 +2,8 @@ import wollok.game.*
 
 object personaje {
     
-    var xReal = 25.0
-    var yReal = 25.0 
+    var xReal = 5.0
+    var yReal = 5.0 
 
     var property position = game.at(25, 25)
     method image() = "personaje.png" 
@@ -14,14 +14,14 @@ object personaje {
     var yendoDerecha = false
     var yendoIzquierda = false
     
-    const gravedad = -0.75       
-    const aceleracionSuelo = 1.2
-    const aceleracionAire = 0.6
+    const gravedad = -0.15       
+    const aceleracionSuelo = 0.24
+    const aceleracionAire = 0.12
     const friccionSuelo = 0.85     
     const friccionAire = 0.95     
-    const impulsoSalto = 7.5     
-    const velMaximaX = 3.0       
-    const nivelSuelo = 5         
+    const impulsoSalto = 1.5     
+    const velMaximaX = 0.6       
+    const nivelSuelo = 1         
 
     method velMaximaX() = velMaximaX 
     method avanzarDerecha() { yendoDerecha = true }
@@ -65,8 +65,8 @@ object personaje {
         }
         
         // limite derecho
-        // al restarle 20 celdas (game.width() - 20) lo movemos mas a la izquierda porq sin esto se pasa
-        const limiteDerecho = game.width() - 20
+        // al restarle 3 celdas (game.width() - 3) lo movemos mas a la izquierda porq sin esto se pasa
+        const limiteDerecho = game.width() - 3
         
         if (xReal > limiteDerecho) {
             xReal = limiteDerecho
@@ -111,12 +111,14 @@ object personaje {
         vx = vx * -0.5 
     }
     method rebotarHaciaDerecha() {
-        xReal = xReal + 3.0 
+       xReal = xReal + 1.0 
         vx = 0.0            
+        position = game.at(xReal.truncate(0), yReal.truncate(0))           
     }
     method rebotarHaciaIzquierda() {
-        xReal = xReal - 3.0 
+        xReal = xReal - 1.0 
         vx = 0.0
+        position = game.at(xReal.truncate(0), yReal.truncate(0))
     }
 
     method chocarPiso(){

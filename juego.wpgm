@@ -7,10 +7,10 @@ import paredesPiso.*
 program MiJuego { 
     game.title("Prototipo de Movimiento Fino")
     
-    game.cellSize(10)
+    game.cellSize(25)
         
-    game.height(150)
-    game.width(250)
+    game.height(30)
+    game.width(50)
 
     game.addVisual(personaje)
 
@@ -25,11 +25,12 @@ program MiJuego {
     game.onCollideDo(personaje, { elemento => elemento.chocar(personaje) }) //cuando el personaje choca con un obstaculo, se ejecuta el metodo chocar de ese obstaculo
     configuracionControles.configurar()
 
-    const pasto = new Pasto(position = game.at(-1,-1))
+    const pasto = new Pasto(position = game.at(0,0))
+    const pasto2 = new Pasto(position = game.at(30,0))
     game.addVisual(pasto)
+    game.addVisual(pasto2)
 
     game.addVisual(muroPrueba)
-    creadorDeHitboxes.crearParedDerecha(130, 133, 5)
 
     game.onTick(25, "bucleFisica", { personaje.actualizarFisica() })
 
