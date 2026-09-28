@@ -1,16 +1,16 @@
 import wollok.game.*
 
-class Limite {
+class Pared {
     var property position
 }
 
-class LimiteIzquierdo inherits Limite {
+class ParedIzquierda inherits Pared {
     method chocar(personaje) {
         personaje.rebotarHaciaDerecha()
     }
 }
 
-class LimiteDerecho inherits Limite {
+class ParedDerecha inherits Pared {
     method chocar(personaje) {
         personaje.rebotarHaciaIzquierda()
     }
@@ -19,12 +19,12 @@ class LimiteDerecho inherits Limite {
 object creadorDeHitboxes {
     method crearParedDerecha(xInicio, xFin, y) {
         (xInicio..xFin).forEach({ x => // el .. genera una lista de numeros enteros entre xInicio y xFin, incluyendolos, de forma que la pared tenga un grosor mayor a una casilla
-            game.addVisual(new LimiteDerecho(position = game.at(x, y)))
+            game.addVisual(new ParedDerecha(position = game.at(x, y)))
         })
     }
     method crearParedIzquierda(xInicio, xFin, y) {
         (xInicio..xFin).forEach({ x => 
-            game.addVisual(new LimiteIzquierdo(position = game.at(x, y)))
+            game.addVisual(new ParedIzquierda(position = game.at(x, y)))
         })
     }
 }

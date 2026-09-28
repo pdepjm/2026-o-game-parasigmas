@@ -17,13 +17,13 @@ object personaje {
     const gravedad = -0.75       
     const aceleracionSuelo = 1.2
     const aceleracionAire = 0.6
-    const friccionSuelo = 0.85     // Es porcentaje, se mantiene igual
-    const friccionAire = 0.95     // Es porcentaje, se mantiene igual
+    const friccionSuelo = 0.85     
+    const friccionAire = 0.95     
     const impulsoSalto = 7.5     
     const velMaximaX = 3.0       
     const nivelSuelo = 5         
 
-    method velMaximaX() = velMaximaX // getter para constructor de niveles
+    method velMaximaX() = velMaximaX 
     method avanzarDerecha() { yendoDerecha = true }
     method frenarDerecha()   { yendoDerecha = false }
 
@@ -31,9 +31,9 @@ object personaje {
     method frenarIzquierda()   { yendoIzquierda = false }
 
     method actualizarFisica() {
-        const accelActual = if (self.estaEnElSuelo()) aceleracionSuelo else aceleracionAire // Distintas para controlar mejor el personaje
+        const accelActual = if (self.estaEnElSuelo()) aceleracionSuelo else aceleracionAire 
         
-        //Movimiento lateral
+        // Movimiento lateral
         if (yendoDerecha) {
             vx = vx + accelActual
         }
@@ -41,12 +41,12 @@ object personaje {
             vx = vx - accelActual
         }
 
-        //Caida
+        // Caida
         if (!self.estaEnElSuelo()) {
             vy = vy + gravedad
         }
 
-        //Friccion de suelo/aire
+        // Friccion de suelo/aire
         if (self.estaEnElSuelo()) {
             vx = vx * friccionSuelo
         } else {
@@ -55,11 +55,28 @@ object personaje {
         
         vx = vx.min(velMaximaX).max(velMaximaX * -1)
         
-        //Para actualizar posicion
+        
         xReal = xReal + vx
+        
+        // limite izquierdo
+        if (xReal < 0) {
+            xReal = 0
+            vx = 0 // frena el impulso contra la pared
+        }
+        
+        // limite derecho
+        // al restarle 20 celdas (game.width() - 20) lo movemos mas a la izquierda porq sin esto se pasa
+        const limiteDerecho = game.width() - 20
+        
+        if (xReal > limiteDerecho) {
+            xReal = limiteDerecho
+            vx = 0 // frena el impulso contra la pared
+        }
+        
+
         yReal = yReal + vy
         
-        //Colision con suelo
+        // Colision con suelo original
         if (yReal < nivelSuelo) {
             yReal = nivelSuelo
             vy = 0 
@@ -77,7 +94,6 @@ object personaje {
     }
 
     method centrar() { 
-        // Coordenadas escaladas por 5 (antes 15 y 10)
         xReal = 75.0
         yReal = 50.0
         vx = 0.0
@@ -92,20 +108,18 @@ object personaje {
     }
 
     method chocarPared(){
-        vx = vx * -0.5 // hace que "rebote" con la pared
+        vx = vx * -0.5 
+    }
+    method rebotarHaciaDerecha() {
+        xReal = xReal + 3.0 
+        vx = 0.0            
+    }
+    method rebotarHaciaIzquierda() {
+        xReal = xReal - 3.0 
+        vx = 0.0
     }
 
     method chocarPiso(){
         vy = 0
-    }
-
-   method rebotarHaciaDerecha() {
-        xReal = xReal + 3.0 
-        vx = 0.0            
-    }
-
-    method rebotarHaciaIzquierda() {
-        xReal = xReal - 3.0 
-        vx = 0.0
     }
 }

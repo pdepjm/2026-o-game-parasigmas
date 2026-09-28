@@ -27,11 +27,6 @@ program MiJuego {
 
     const pasto = new Pasto(position = game.at(-1,-1))
     game.addVisual(pasto)
-    
-    // limites del mundo "gruesos" (celdas 0 a 3 y celdas 230 a 233) para evitar que traspase personaje
-    creadorDeHitboxes.crearParedIzquierda(0, 3, 5)
-
-    creadorDeHitboxes.crearParedDerecha(230, 233, 5)
 
     game.addVisual(muroPrueba)
     creadorDeHitboxes.crearParedDerecha(130, 133, 5)
