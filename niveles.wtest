@@ -68,6 +68,7 @@ describe "interacciones" {
     }
 
     test "la meta genera cartel de victoria" {
+        personaje.agarrarLlave()
         meta.chocar(personaje)
         assert.that(game.hasVisual(cartelVictoria))
     }
