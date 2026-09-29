@@ -22,3 +22,4 @@ object configuracionControles {
         keyboard.c().onPressDo({ personaje.centrar() })
     }
 }
+

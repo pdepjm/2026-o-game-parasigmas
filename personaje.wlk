@@ -5,8 +5,8 @@ object personaje {
     var xReal = 5.0
     var yReal = 5.0
 
-    method xReal() = xReal //getter para tests
-    method yReal() = yReal //getter para tests
+    method xReal() = xReal 
+    method yReal() = yReal 
 
     var property position = game.at(25, 25)
     method image() = "personaje.png" 
@@ -29,18 +29,24 @@ object personaje {
     const velMaximaX = 0.6       
     const nivelSuelo = 1         
 
+    var estaApoyado = false 
+
     method gravedad() = gravedad
     method impulsoSalto() = impulsoSalto
     method nivelSuelo() = nivelSuelo
-
     method velMaximaX() = velMaximaX 
+
     method avanzarDerecha() { yendoDerecha = true }
     method frenarDerecha()   { yendoDerecha = false }
 
     method avanzarIzquierda() { yendoIzquierda = true }
     method frenarIzquierda()   { yendoIzquierda = false }
 
+    method estaEnElSuelo() = yReal <= nivelSuelo or estaApoyado
+
     method actualizarFisica() {
+        estaApoyado = false // Se reinicia en cada tick; la colisión lo volverá a activar si sigue sobre el bloque
+        
         const accelActual = if (self.estaEnElSuelo()) aceleracionSuelo else aceleracionAire 
         
         // Movimiento lateral
@@ -65,25 +71,21 @@ object personaje {
         
         vx = vx.min(velMaximaX).max(velMaximaX * -1)
         
-        
         xReal = xReal + vx
         
         // limite izquierdo
         if (xReal < 0) {
             xReal = 0
-            vx = 0 // frena el impulso contra la pared
+            vx = 0 
         }
         
         // limite derecho
-        // al restarle 3 celdas (game.width() - 3) lo movemos mas a la izquierda porq sin esto se pasa
         const limiteDerecho = game.width() - 3
-        
         if (xReal > limiteDerecho) {
             xReal = limiteDerecho
-            vx = 0 // frena el impulso contra la pared
+            vx = 0 
         }
         
-
         yReal = yReal + vy
         
         // Colision con suelo original
@@ -94,8 +96,6 @@ object personaje {
         
         position = game.at(xReal.truncate(0), yReal.truncate(0))
     }
-
-    method estaEnElSuelo() = yReal <= nivelSuelo
 
     method saltar() {
         if (self.estaEnElSuelo()) {
@@ -120,18 +120,44 @@ object personaje {
     method chocarPared(){
         vx = vx * -0.5 
     }
+
+
+    // se llama cuando me choco con una estructura en su parte de la derecha, estaria con v negativa
     method rebotarHaciaDerecha() {
-       xReal = xReal + 1.0 
-        vx = 0.0            
-        position = game.at(xReal.truncate(0), yReal.truncate(0))           
+        xReal = xReal + 1.0 // me voy 1 a la derecha 
+        vx = 0.0            // se resetea la vx
+        position = game.at(xReal.truncate(0), yReal.truncate(0))  // actualizo la posicion actual del pj      
     }
+
+    // lo mismo que rebotarHaciaDerecha pero en izquierda
     method rebotarHaciaIzquierda() {
         xReal = xReal - 1.0 
         vx = 0.0
         position = game.at(xReal.truncate(0), yReal.truncate(0))
     }
 
-    method chocarPiso(){
-        vy = 0
+
+    // se llama cuando caemos sobre una estructura
+    method apoyarseEn(nuevaY) {
+        yReal = nuevaY - gravedad // se compensa la gravedad del proximo tick para mantener todo estable
+        vy = 0.0  // se resetea la vy
+        estaApoyado = true  // esto se hace para que se pueda saltar devuelta
+        position = game.at(xReal.truncate(0), yReal.truncate(0))  // actaulizo la posicion actual del pj
     }
+
+    // se llama cuando golpeo la cabeza con un techo
+    method rebotarTecho() {
+        vy = -0.5 // lo empuja ligeramente hacia abajo al chocar la cabeza
+    }
+
+
+    // llave
+    var tieneLlave = false
+
+    method tieneLlave() = tieneLlave
+    method agarrarLlave() { tieneLlave = true }
+
+
+
 }
+

@@ -19,4 +19,3 @@ class Sierra inherits Obstaculo
 {
     method image() = "sierra.png"
 }
-
