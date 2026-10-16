@@ -17,8 +17,8 @@ class Muro inherits BloqueSolido {
 }
 
 class Plataforma inherits BloqueSolido {
-    method image() = "plataformaPiedra.png"
-    override method xDerecho() = position.x() + 2
+    method image() = "plataforma.png"
+    override method xDerecho() = position.x() + 3
 }
 
 class Piso inherits BloqueSolido {

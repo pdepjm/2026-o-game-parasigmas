@@ -65,8 +65,8 @@ object nivel1 inherits Nivel(posicionSpawn = game.at(5, 5), posicionMeta = game.
         game.addVisual(pinche2)
         game.addVisual(sierra1)
 
-        const pasto = new Plataforma(position = game.at(0,0))
-        const pasto2 = new Plataforma(position = game.at(30,0))
+        const pasto = new Pasto(position = game.at(0,0))
+        const pasto2 = new Pasto(position = game.at(30,0))
         game.addVisual(pasto)
         game.addVisual(pasto2)
         motorFisico.registrar(pasto)
