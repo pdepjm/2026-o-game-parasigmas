@@ -55,8 +55,15 @@ object personaje {
     }
 
     // llave
-    var tieneLlave = false
+    var llavesAgarradas = 0
 
-    method tieneLlave() = tieneLlave
-    method agarrarLlave() { tieneLlave = true }
+    method cantidadLlaves() = llavesAgarradas
+        
+    method agarrarLlave() {
+        llavesAgarradas += 1
+    }
+
+    method reiniciarLlaves() {
+        llavesAgarradas = 0
+    }
 }

@@ -19,8 +19,9 @@ class OpcionMenu {
     const imagenNormal
     const imagenSeleccionada
     const accion
+    const menuActual
 
-    method image() = if (menu.opcionSeleccionada() == self) imagenSeleccionada else imagenNormal
+    method image() = if (menuActual.opcionSeleccionada() == self) imagenSeleccionada else imagenNormal
 
     method ejecutar() { accion.apply() }
 }
@@ -35,11 +36,11 @@ object menu {
 
     // botones de 400 x 75 (16 x 3 celdas), centrados en x = 17
     const opciones = [
-        new OpcionMenu(position = game.at(17, 14), imagenNormal = "btnJugar.png",
+        new OpcionMenu(menuActual = self, position = game.at(17, 14), imagenNormal = "btnJugar.png",
                        imagenSeleccionada = "btnJugarSel.png", accion = { self.jugar() }),
-        new OpcionMenu(position = game.at(17, 10), imagenNormal = "btnControles.png",
+        new OpcionMenu(menuActual = self, position = game.at(17, 10), imagenNormal = "btnControles.png",
                        imagenSeleccionada = "btnControlesSel.png", accion = { self.mostrarControles() }),
-        new OpcionMenu(position = game.at(17, 6), imagenNormal = "btnSalir.png",
+        new OpcionMenu(menuActual = self, position = game.at(17, 6), imagenNormal = "btnSalir.png",
                        imagenSeleccionada = "btnSalirSel.png", accion = { game.stop() })
     ]
 
@@ -112,5 +113,55 @@ object menu {
         configuracionControles.configurar()
         game.onCollideDo(personaje, { elemento => elemento.chocar(personaje) })
         game.onTick(25, "bucleFisica", { motorFisico.actualizarFisica(personaje) })
+    }
+}
+
+object menuVictoria {
+    var nivelActual = null
+    var indice = 0
+    var opciones = []
+
+    const cartel = new ImagenMenu(position = game.at(15, 15), image = "victoria.png") // 800 x 150
+
+    method opcionSeleccionada() = opciones.get(indice)
+
+    method abrir(unNivel) {
+        nivelActual = unNivel 
+        indice = 0
+        opciones = []
+
+        if (unNivel.siguienteNivel() != null) {
+            opciones.add(new OpcionMenu(menuActual = self, position = game.at(17, 10), imagenNormal = "btnSiguiente.png",
+                                        imagenSeleccionada = "btnSiguienteSel.png", accion = { unNivel.irAlSiguiente() }))
+        }
+
+        opciones.add(new OpcionMenu(menuActual = self, position = game.at(17, 5), imagenNormal = "btnMenu.png",
+                                    imagenSeleccionada = "btnMenuSel.png", accion = { menu.mostrar() }))
+
+        self.mostrar()
+    }
+
+    method subir() {
+        indice = (indice - 1 + opciones.size()) % opciones.size()
+    }
+
+    method bajar() {
+        indice = (indice + 1) % opciones.size()
+    }
+
+    method seleccionar() {
+        self.opcionSeleccionada().ejecutar()
+    }
+
+    method mostrar() {
+        game.clear()
+        game.addVisual(cartel)
+        opciones.forEach({ opcion => game.addVisual(opcion) })
+
+        keyboard.up().onPressDo({ self.subir() })
+        keyboard.w().onPressDo({ self.subir() })
+        keyboard.down().onPressDo({ self.bajar() })
+        keyboard.s().onPressDo({ self.bajar() })
+        keyboard.enter().onPressDo({ self.seleccionar() })
     }
 }

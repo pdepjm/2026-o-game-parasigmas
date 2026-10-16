@@ -69,10 +69,4 @@ describe "interacciones" {
         motorFisico.actualizarFisica(personaje)
         assert.equals(0, personaje.vx())
     }
-
-    test "la meta genera cartel de victoria" {
-        personaje.agarrarLlave()
-        meta.chocar(personaje)
-        assert.that(game.hasVisual(cartelVictoria))
-    }
 }

@@ -4,10 +4,13 @@ import obstaculos.*
 import motorfisico.*
 import paredesPiso.*
 import objetos.*
+import menu.*
 
 class Nivel { 
     const posicionSpawn 
     const posicionMeta
+    const property siguienteNivel = null
+    const property llavesNecesarias = 1
 
     method iniciarNivel() {
         game.clear()
@@ -18,11 +21,14 @@ class Nivel {
 
     method configurarSpawn() {
         personaje.irA(posicionSpawn) 
+        personaje.reiniciarLlaves()
         game.addVisual(personaje)
     }
 
     method configurarMeta() {
         meta.position(posicionMeta) 
+        meta.nivelActual(self)
+        meta.llavesNecesarias(llavesNecesarias)
         game.addVisual(meta)
     }
 
@@ -31,29 +37,34 @@ class Nivel {
     }
 
     method victoria() {
-        game.clear()
-        game.addVisual(cartelVictoria)
+        menuVictoria.abrir(self)
+    }
+
+    method irAlSiguiente() {
+        if (siguienteNivel != null) {
+            siguienteNivel.iniciarNivel()
+            menu.activarJuego()
+        } else {
+            menu.mostrar()
+        }
     }
 }
 
 object meta { 
     var property position = game.at(0,0) 
+    var property nivelActual = null
+    var property llavesNecesarias = 1
+
     method image() = "meta.png" 
 
     method chocar(unPersonaje){ 
-        if (unPersonaje.tieneLlave()) { // para ganar tiene que tener la llave
-            game.clear() 
-            game.addVisual(cartelVictoria) 
+        if (unPersonaje.cantidadLlaves() >= llavesNecesarias) { // para ganar tiene que tener la llave
+            nivelActual.victoria()
         }
     } 
 }
 
-object cartelVictoria { 
-    var property position = game.at(20,10) 
-    method image() = "victoria.png" 
-}
-
-object nivel1 inherits Nivel(posicionSpawn = game.at(5, 5), posicionMeta = game.at(45, 1)) {
+object nivel1 inherits Nivel(posicionSpawn = game.at(5, 5), posicionMeta = game.at(45, 1), siguienteNivel = nivel2) {
     
     override method dibujarEntorno() {
         // Todo lo que estaba en juego.wpgm ahora esta aca
@@ -86,5 +97,19 @@ object nivel1 inherits Nivel(posicionSpawn = game.at(5, 5), posicionMeta = game.
 
         const llave = new Llave(position = game.at(25, 16))
         game.addVisual(llave)
+    }
+}
+
+object nivel2 inherits Nivel(posicionSpawn = game.at(2, 5), posicionMeta = game.at(40, 10), llavesNecesarias = 2) {
+    
+    override method dibujarEntorno() {
+        const pasto = new Pasto(position = game.at(0, 0))
+        game.addVisual(pasto)
+        motorFisico.registrar(pasto)
+
+        const llave1 = new Llave(position = game.at(15, 5))
+        const llave2 = new Llave(position = game.at(30, 8))
+        game.addVisual(llave1)
+        game.addVisual(llave2)
     }
 }
