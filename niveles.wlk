@@ -11,6 +11,10 @@ class Nivel {
     const posicionMeta
     const property siguienteNivel = null
     const property llavesNecesarias = 1
+    var desbloqueado = false
+
+    method desbloquearNivel () { desbloqueado = true}
+    method estaDesbloqueado() = desbloqueado
 
     method iniciarNivel() {
         game.clear()
@@ -37,6 +41,9 @@ class Nivel {
     }
 
     method victoria() {
+        if (siguienteNivel != null) {
+                siguienteNivel.desbloquearNivel()
+            }
         menuVictoria.abrir(self)
     }
 
@@ -65,6 +72,8 @@ object meta {
 }
 
 object nivel1 inherits Nivel(posicionSpawn = game.at(5, 5), posicionMeta = game.at(45, 1), siguienteNivel = nivel2) {
+
+    override method estaDesbloqueado() = true // El primer nivel siempre está desbloqueado
     
     override method dibujarEntorno() {
         // Todo lo que estaba en juego.wpgm ahora esta aca

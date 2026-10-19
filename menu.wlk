@@ -26,6 +26,27 @@ class OpcionMenu {
     method ejecutar() { accion.apply() }
 }
 
+class OpcionNivel inherits OpcionMenu {
+    const nivelAsociado
+
+    override method image() {
+        if (not nivelAsociado.estaDesbloqueado()) {
+            return "btnCandado.png"
+        }
+        return super()
+    }
+
+    override method ejecutar() {
+        if (nivelAsociado.estaDesbloqueado()) {
+            super()
+        }
+        else {
+            game.sound("nivelBloqueado.mp3").play()
+        }
+    }
+
+}
+
 object menu {
     // Tablero de 50 x 30 celdas de 25 px = 1250 x 750 px
     const fondo  = new ImagenMenu(position = game.at(0, 0),  image = "menuFondo.png")
@@ -37,7 +58,7 @@ object menu {
     // botones de 400 x 75 (16 x 3 celdas), centrados en x = 17
     const opciones = [
         new OpcionMenu(menuActual = self, position = game.at(17, 14), imagenNormal = "btnJugar.png",
-                       imagenSeleccionada = "btnJugarSel.png", accion = { self.jugar() }),
+                       imagenSeleccionada = "btnJugarSel.png", accion = { menuNiveles.mostrar() }),
         new OpcionMenu(menuActual = self, position = game.at(17, 10), imagenNormal = "btnControles.png",
                        imagenSeleccionada = "btnControlesSel.png", accion = { self.mostrarControles() }),
         new OpcionMenu(menuActual = self, position = game.at(17, 6), imagenNormal = "btnSalir.png",
@@ -158,6 +179,45 @@ object menuVictoria {
         game.addVisual(cartel)
         opciones.forEach({ opcion => game.addVisual(opcion) })
 
+        keyboard.up().onPressDo({ self.subir() })
+        keyboard.w().onPressDo({ self.subir() })
+        keyboard.down().onPressDo({ self.bajar() })
+        keyboard.s().onPressDo({ self.bajar() })
+        keyboard.enter().onPressDo({ self.seleccionar() })
+    }
+}
+
+object menuNiveles {
+    var indice = 0
+
+    const opciones = [
+        new OpcionNivel(menuActual = self, position = game.at(17, 12), imagenNormal = "btnNivel1.png",
+                       imagenSeleccionada = "btnNivel1Sel.png", nivelAsociado = nivel1, accion = { nivel1.iniciarNivel(); menu.activarJuego() }
+        ),
+
+        new OpcionNivel(menuActual = self, position = game.at(17, 8), imagenNormal = "btnNivel2.png",
+                       imagenSeleccionada = "btnNivel2Sel.png", nivelAsociado = nivel2, accion = { nivel2.iniciarNivel(); menu.activarJuego() }
+        ),
+
+        new OpcionMenu(menuActual = self, position = game.at(17, 4), imagenNormal = "btnMenu.png",
+                       imagenSeleccionada = "btnMenuSel.png", accion = { menu.mostrar() })
+    ]
+
+    method opcionSeleccionada() = opciones.get(indice)
+
+    method mostrar() {
+        indice = 0
+        game.clear()
+
+        opciones.forEach({ opcion => game.addVisual(opcion) })
+        self.configurarControles()
+    }
+
+    method subir() { indice = (indice - 1 + opciones.size()) % opciones.size() }
+    method bajar() { indice = (indice + 1) % opciones.size() }
+    method seleccionar() { self.opcionSeleccionada().ejecutar() }
+
+    method configurarControles() {
         keyboard.up().onPressDo({ self.subir() })
         keyboard.w().onPressDo({ self.subir() })
         keyboard.down().onPressDo({ self.bajar() })
