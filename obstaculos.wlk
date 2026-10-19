@@ -14,8 +14,8 @@ class Obstaculo {
 
 class Pinche inherits Obstaculo {
     method image() = "pinchos.png"
-    override method ancho() = 5
-    override method alto()  = 2
+    override method ancho() = 6
+    override method alto()  = 1
 }
 
 class Sierra inherits Obstaculo {
