@@ -1,11 +1,5 @@
-import motorfisico.*
 import wollok.game.*
-import personaje.*
-import controles.*
-import obstaculos.*
-import paredesPiso.*
 import niveles.*
-import objetos.*
 import menu.*
 
 program MiJuego { 
@@ -14,7 +8,6 @@ program MiJuego {
     game.height(30)
     game.width(50)
 
-    // El juego arranca cediéndole el control absoluto al menú, pasándole el nivel 1.
     menu.abrir(nivel1)
 
     game.start()

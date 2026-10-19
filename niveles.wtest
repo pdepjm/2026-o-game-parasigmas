@@ -28,16 +28,16 @@ describe "Tests de la base de niveles" {
 describe "fisicas" {
     
     test "el personaje es afectado por la gravedad" {
-        personaje.irA(game.at(10, 20)) // Lo ponemos en el aire
+        personaje.irA(game.at(10, 20))
         motorFisico.actualizarFisica(personaje) 
         
-        assert.equals(20+motorFisico.gravedad(), personaje.yReal()) 
+        assert.equals(20 + motorFisico.gravedad(), personaje.yReal()) 
     }
 
     test "el salto aumenta la velocidad en y" {
-    personaje.irA(game.at(10, motorFisico.nivelSuelo()))
-    personaje.saltar()
-    assert.equals(personaje.impulsoSalto(), personaje.vy())
+        personaje.irA(game.at(10, motorFisico.nivelSuelo()))
+        personaje.saltar()
+        assert.equals(personaje.impulsoSalto(), personaje.vy())
     }
 
     test "el personaje avanza correctamente" {
@@ -55,6 +55,7 @@ describe "fisicas" {
 describe "interacciones" {
     test "tocar una sierra reinicia la posición del personaje" {
         const sierra = new Sierra(position = game.at(15, 1))
+        personaje.posicionInicial(game.at(5, 5))
         personaje.irA(game.at(15, 1))
         
         sierra.chocar(personaje) 
@@ -63,8 +64,9 @@ describe "interacciones" {
     }
 
     test "chocar con un muro frena al personaje" {
-        const muro = new Muro(position = game.at(30,1))
-        personaje.irA(game.at(29,1))
+        const muro = new Muro(position = game.at(30, 1))
+        motorFisico.registrar(muro)
+        personaje.irA(game.at(27, 1))
         personaje.avanzarDerecha()
         motorFisico.actualizarFisica(personaje)
         assert.equals(0, personaje.vx())

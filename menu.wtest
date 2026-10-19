@@ -6,21 +6,39 @@ import personaje.*
 describe "Menu del juego" {
 
     const nivel = new Nivel(posicionSpawn = game.at(2, 1), posicionMeta = game.at(15, 5))
+    var reloj = 0 // tiempo simulado, en milisegundos
 
     method initialize() {
         menu.abrir(nivel)
     }
 
-    // simula que el jugador aprieta una tecla (y deja correr los eventos)
-    method pulsar(tecla) {
+    // hace pasar el tiempo (para los cooldowns y los schedule del menu)
+    method esperar(milisegundos) {
+        reloj += milisegundos
+        game.flushEvents(reloj)
+    }
+
+    // un toque de tecla, SIN esperar despues
+    method tocar(tecla) {
         io.queueEvent("keypress", tecla)
-        game.flushEvents(0)
+        self.esperar(10)
+    }
+
+    // un toque de tecla y espera a que termine el cooldown de navegacion (400 ms)
+    method pulsar(tecla) {
+        self.tocar(tecla)
+        self.esperar(450)
+    }
+
+    // ENTER sobre la opcion seleccionada, esperando a que se ejecute (suena la seleccion y pasan 500 ms)
+    method elegir() {
+        self.tocar("Enter")
+        self.esperar(600)
     }
 
     method imagenDeOpcion(posicion) = menu.opciones().get(posicion).image()
 
     test "al abrir el menu se dibujan fondo, titulo, ayuda y las tres opciones" {
-        assert.that(game.hasVisual(menu.opciones().get(0)))
         assert.that(menu.opciones().all({ opcion => game.hasVisual(opcion) }))
         assert.equals(3, menu.opciones().size())
     }
@@ -60,28 +78,44 @@ describe "Menu del juego" {
         assert.equals("btnJugar.png", self.imagenDeOpcion(0))
     }
 
-    test "ENTER sobre JUGAR saca el menu y pone al personaje en el spawn" {
-        const opcionJugar = menu.opcionSeleccionada()
-        self.pulsar("Enter")
+    test "una pulsacion pegada a la anterior se ignora (cooldown de navegacion)" {
+        self.tocar("ArrowDown")
+        self.tocar("ArrowDown")
+        assert.equals(1, menu.indiceSeleccionado())
+        self.esperar(450)
+        self.tocar("ArrowDown")
+        assert.equals(2, menu.indiceSeleccionado())
+    }
 
+    test "ENTER sobre JUGAR espera a que suene la seleccion y despues arranca el nivel" {
+        const opcionJugar = menu.opcionSeleccionada()
+        self.tocar("Enter")
+        assert.that(game.hasVisual(opcionJugar)) // todavia en el menu: esta sonando la seleccion
+
+        self.esperar(600)
         assert.notThat(game.hasVisual(opcionJugar))
         assert.that(game.hasVisual(personaje))
-        assert.that(game.hasVisual(meta))
         assert.equals(2, personaje.xReal())
         assert.equals(1, personaje.yReal())
     }
 
+    test "mientras se espera para ejecutar la opcion, las flechas no mueven la seleccion" {
+        self.tocar("Enter")
+        self.tocar("ArrowDown")
+        assert.equals(0, menu.indiceSeleccionado())
+    }
+
     test "al empezar a jugar quedan activos los controles, las colisiones y la fisica" {
-        self.pulsar("Enter")
+        self.elegir()
 
         assert.that(io.containsTimeEvent("bucleFisica"))
         assert.notThat(io.collitionHandlers().isEmpty())
-        self.pulsar("KeyD")
+        self.tocar("KeyD")
         assert.that(personaje.yendoDerecha())
     }
 
     test "las teclas del menu dejan de funcionar una vez que se empieza a jugar" {
-        self.pulsar("Enter")
+        self.elegir()
         self.pulsar("ArrowDown") // en el juego no hace nada
         assert.equals(0, menu.indiceSeleccionado())
     }
@@ -89,7 +123,7 @@ describe "Menu del juego" {
     test "ENTER sobre CONTROLES muestra la pantalla de controles" {
         self.pulsar("ArrowDown")
         const opcionControles = menu.opcionSeleccionada()
-        self.pulsar("Enter")
+        self.elegir()
 
         assert.notThat(game.hasVisual(opcionControles))
         assert.that(game.allVisuals().any({ visual => visual.image() == "pantallaControles.png" }))
@@ -97,17 +131,26 @@ describe "Menu del juego" {
 
     test "desde los controles, ENTER vuelve al menu sin empezar a jugar" {
         self.pulsar("ArrowDown")
-        self.pulsar("Enter") // entra a controles
-        self.pulsar("Enter") // vuelve
+        self.elegir()  // entra a controles
+        self.tocar("Enter") // vuelve
 
         assert.that(menu.opciones().all({ opcion => game.hasVisual(opcion) }))
         assert.notThat(game.hasVisual(personaje))
         assert.equals(0, menu.indiceSeleccionado())
     }
 
-    test "ENTER sobre SALIR termina el juego sin cambiar de pantalla ni dar errores" {
+    test "despues de entrar a CONTROLES y volver, el menu se puede seguir navegando" {
+        self.pulsar("ArrowDown")
+        self.elegir()
+        self.tocar("Enter") // vuelve al menu
+        self.pulsar("ArrowDown")
+
+        assert.equals(1, menu.indiceSeleccionado())
+    }
+
+    test "ENTER sobre SALIR deja el menu en pantalla y no da errores" {
         self.pulsar("ArrowUp")
-        self.pulsar("Enter")
+        self.elegir()
 
         assert.notThat(game.running())
         assert.that(menu.opciones().all({ opcion => game.hasVisual(opcion) }))

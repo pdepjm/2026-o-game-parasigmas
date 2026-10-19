@@ -4,16 +4,16 @@ import motorfisico.*
 import controles.*
 import niveles.*
 
-// Imagen fija del menu (fondo, titulo, ayuda...).
-// Wollok la dibuja con su esquina INFERIOR IZQUIERDA en `position`
-// y crece hacia arriba y hacia la derecha.
+
 class ImagenMenu {
     const property position
     const property image
 }
 
 // Una opcion del menu: se ve distinta si esta seleccionada y sabe que hacer al elegirla.
-// Para agregar una opcion nueva alcanza con sumarla a la lista `opciones` de `menu`.
+// `menuActual` es el menu al que pertenece (menu o menuVictoria): asi cada menu
+// resalta SU opcion seleccionada y no la del otro.
+// Para agregar una opcion nueva alcanza con sumarla a la lista `opciones` del menu.
 class OpcionMenu {
     const property position
     const imagenNormal
@@ -39,12 +39,25 @@ class OpcionNivel inherits OpcionMenu {
     override method ejecutar() {
         if (nivelAsociado.estaDesbloqueado()) {
             super()
+            sonidosMenu.reproducir(sonidosMenu.seleccion())
         }
         else {
             game.sound("nivelBloqueado.mp3").play()
         }
     }
+}
+// Sonidos compartidos por los menus: el nombre tiene que ser EXACTO, con la extension
+// (.mp3 / .ogg / .wav), igual que el archivo que esta en la carpeta de assets.
+object sonidosMenu {
+    const navegacion = "sonido menu1.mp3"
+    const seleccion  = "sonido seleccion.mp3"
 
+    method navegacion() = navegacion
+    method seleccion()  = seleccion
+
+    method reproducir(archivo) {
+        game.sound(archivo).play()
+    }
 }
 
 object menu {
@@ -85,14 +98,17 @@ object menu {
 
     method subir() {
         indice = (indice - 1 + opciones.size()) % opciones.size()
+        sonidosMenu.reproducir(sonidosMenu.navegacion())
     }
 
     method bajar() {
         indice = (indice + 1) % opciones.size()
+        sonidosMenu.reproducir(sonidosMenu.navegacion())
     }
 
     method seleccionar() {
         self.opcionSeleccionada().ejecutar()
+        sonidosMenu.reproducir(sonidosMenu.seleccion())
     }
 
     // ---------------- pantallas ----------------
@@ -125,7 +141,14 @@ object menu {
         if (nivelAJugar == null) {
             self.error("Falta indicar el nivel: usar menu.abrir(unNivel) en lugar de menu.mostrar()")
         }
-        nivelAJugar.iniciarNivel() // hace game.clear(), ubica personaje y meta, dibuja el entorno
+        self.jugarNivel(nivelAJugar)
+    }
+
+    // Arranca un nivel cualquiera y lo recuerda, asi reiniciarNivel() reinicia el que se esta jugando
+    // (tambien lo usa menuVictoria para pasar al siguiente nivel).
+    method jugarNivel(unNivel) {
+        nivelAJugar = unNivel
+        unNivel.iniciarNivel() // hace game.clear(), ubica personaje y meta, dibuja el entorno
         self.activarJuego()
     }
 
@@ -134,6 +157,11 @@ object menu {
         configuracionControles.configurar()
         game.onCollideDo(personaje, { elemento => elemento.chocar(personaje) })
         game.onTick(25, "bucleFisica", { motorFisico.actualizarFisica(personaje) })
+    }
+
+    method reiniciarNivel() {
+        nivelAJugar.iniciarNivel()
+        self.activarJuego()
     }
 }
 
@@ -164,14 +192,17 @@ object menuVictoria {
 
     method subir() {
         indice = (indice - 1 + opciones.size()) % opciones.size()
+        sonidosMenu.reproducir(sonidosMenu.navegacion())
     }
 
     method bajar() {
         indice = (indice + 1) % opciones.size()
+        sonidosMenu.reproducir(sonidosMenu.navegacion())
     }
 
     method seleccionar() {
         self.opcionSeleccionada().ejecutar()
+        sonidosMenu.reproducir(sonidosMenu.seleccion())
     }
 
     method mostrar() {
@@ -191,12 +222,16 @@ object menuNiveles {
     var indice = 0
 
     const opciones = [
-        new OpcionNivel(menuActual = self, position = game.at(17, 12), imagenNormal = "btnNivel1.png",
+        new OpcionNivel(menuActual = self, position = game.at(17, 16), imagenNormal = "btnNivel1.png",
                        imagenSeleccionada = "btnNivel1Sel.png", nivelAsociado = nivel1, accion = { nivel1.iniciarNivel(); menu.activarJuego() }
         ),
 
-        new OpcionNivel(menuActual = self, position = game.at(17, 8), imagenNormal = "btnNivel2.png",
+        new OpcionNivel(menuActual = self, position = game.at(17, 12), imagenNormal = "btnNivel2.png",
                        imagenSeleccionada = "btnNivel2Sel.png", nivelAsociado = nivel2, accion = { nivel2.iniciarNivel(); menu.activarJuego() }
+        ),
+
+        new OpcionNivel(menuActual = self, position = game.at(17, 8), imagenNormal = "btnNivel3.png",
+                       imagenSeleccionada = "btnNivel3Sel.png", nivelAsociado = nivel3, accion = { nivel3.iniciarNivel(); menu.activarJuego() }
         ),
 
         new OpcionMenu(menuActual = self, position = game.at(17, 4), imagenNormal = "btnMenu.png",
@@ -213,8 +248,15 @@ object menuNiveles {
         self.configurarControles()
     }
 
-    method subir() { indice = (indice - 1 + opciones.size()) % opciones.size() }
-    method bajar() { indice = (indice + 1) % opciones.size() }
+    method subir() { 
+        indice = (indice - 1 + opciones.size()) % opciones.size()
+        sonidosMenu.reproducir(sonidosMenu.navegacion())
+    }
+
+    method bajar() { indice = (indice + 1) % opciones.size() 
+        sonidosMenu.reproducir(sonidosMenu.navegacion())
+    }
+
     method seleccionar() { self.opcionSeleccionada().ejecutar() }
 
     method configurarControles() {
