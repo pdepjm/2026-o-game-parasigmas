@@ -1,50 +1,14 @@
 import wollok.game.*
-import personaje.*
-import controles.*
-import obstaculos.*
-import paredesPiso.*
 import niveles.*
-import objetos.*
+import menu.*
 
 program MiJuego { 
-    game.title("Prototipo de Movimiento Fino")
-    
+    game.title("SuperFat boy")
     game.cellSize(25)
-        
     game.height(30)
     game.width(50)
 
-    game.addVisual(personaje)
-
-    const pinche1 = new Pinche(position = game.at(10, 1))
-    const pinche2 = new Pinche(position = game.at(11, 1))
-    const sierra1 = new Sierra(position = game.at(20, 5))
-
-    game.addVisual(pinche1)
-    game.addVisual(pinche2)
-    game.addVisual(sierra1)
-
-    game.onCollideDo(personaje, { elemento => elemento.chocar(personaje) })
-
-    configuracionControles.configurar()
-
-    const pasto = new Pasto(position = game.at(0,0))
-    const pasto2 = new Pasto(position = game.at(30,0))
-    game.addVisual(pasto)
-    game.addVisual(pasto2)
-
-    // creo el muro
-    const muroPrueba = new Muro(position = game.at(30, 1))
-    game.addVisual(muroPrueba)
-
-    // creo la llave
-    const llave = new Llave(position = game.at(40, 1))
-    game.addVisual(llave)
-
-    game.onTick(25, "bucleFisica", { personaje.actualizarFisica() })
-
-    meta.position(game.at(45, 1))
-    game.addVisual(meta)
+    menu.abrir(nivel1)
 
     game.start()
 }
