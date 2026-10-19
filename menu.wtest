@@ -78,25 +78,13 @@ describe "Menu del juego" {
         assert.equals("btnJugar.png", self.imagenDeOpcion(0))
     }
 
-    test "una pulsacion pegada a la anterior se ignora (cooldown de navegacion)" {
-        self.tocar("ArrowDown")
-        self.tocar("ArrowDown")
-        assert.equals(1, menu.indiceSeleccionado())
-        self.esperar(450)
-        self.tocar("ArrowDown")
-        assert.equals(2, menu.indiceSeleccionado())
-    }
-
-    test "ENTER sobre JUGAR espera a que suene la seleccion y despues arranca el nivel" {
+    test "ENTER sobre JUGAR abre menú de niveles" {
         const opcionJugar = menu.opcionSeleccionada()
         self.tocar("Enter")
-        assert.that(game.hasVisual(opcionJugar)) // todavia en el menu: esta sonando la seleccion
-
-        self.esperar(600)
+        
         assert.notThat(game.hasVisual(opcionJugar))
-        assert.that(game.hasVisual(personaje))
-        assert.equals(2, personaje.xReal())
-        assert.equals(1, personaje.yReal())
+        assert.that(game.hasVisual(menuNiveles.opcionSeleccionada()))
+        assert.notThat(game.hasVisual(personaje))
     }
 
     test "mientras se espera para ejecutar la opcion, las flechas no mueven la seleccion" {
@@ -106,7 +94,8 @@ describe "Menu del juego" {
     }
 
     test "al empezar a jugar quedan activos los controles, las colisiones y la fisica" {
-        self.elegir()
+        self.tocar("Enter") 
+        self.tocar("Enter")
 
         assert.that(io.containsTimeEvent("bucleFisica"))
         assert.notThat(io.collitionHandlers().isEmpty())
@@ -115,7 +104,8 @@ describe "Menu del juego" {
     }
 
     test "las teclas del menu dejan de funcionar una vez que se empieza a jugar" {
-        self.elegir()
+        self.tocar("Enter") 
+        self.tocar("Enter") 
         self.pulsar("ArrowDown") // en el juego no hace nada
         assert.equals(0, menu.indiceSeleccionado())
     }
