@@ -6,6 +6,12 @@ import paredesPiso.*
 import objetos.*
 import menu.*
 
+
+class ImagenNivel {
+    const property position
+    const property image
+}
+
 class Nivel { 
     const posicionSpawn 
     const posicionMeta
@@ -20,10 +26,10 @@ class Nivel {
         game.clear()
         motorFisico.limpiarBloques()        
         personaje.detener()
+        self.dibujarEntorno() // tiene que ir primero porq si no, el pj esta atras del fondo
         self.configurarSpawn()
         self.configurarMeta()
         self.dibujarPisoBase()
-        self.dibujarEntorno()
     }
 
     method dibujarPisoBase() {
@@ -58,6 +64,12 @@ class Nivel {
 
     method agregarLlaveEn(pos) {
         const llave = new Llave(position = pos)
+        game.addVisual(llave)
+        motorFisico.registrarInteractuable(llave)
+    }
+
+    method agregarLlavePlateadaEn(pos) {
+        const llave = new LlavePlateada(position = pos)
         game.addVisual(llave)
         motorFisico.registrarInteractuable(llave)
     }
@@ -108,6 +120,9 @@ object nivel1 inherits Nivel(posicionSpawn = game.at(5, 5), posicionMeta = game.
     override method estaDesbloqueado() = true // El primer nivel siempre está desbloqueado
     
     override method dibujarEntorno() {
+        const fondo  = new ImagenNivel(position = game.at(0, 0),  image = "fondoNivel1.jpg")
+        game.addVisual(fondo)
+
         // Todo lo que estaba en juego.wpgm ahora esta aca
         self.agregarPeligro(new Pinche(position = game.at(10, 1)))
         self.agregarPeligro(new Sierra(position = game.at(20, 5)))
@@ -132,11 +147,18 @@ object nivel1 inherits Nivel(posicionSpawn = game.at(5, 5), posicionMeta = game.
 object nivel2 inherits Nivel(posicionSpawn = game.at(2, 5), posicionMeta = game.at(40, 10), llavesNecesarias = 2, siguienteNivel = nivel3) {
     
     override method dibujarEntorno() {
+        const fondo  = new ImagenNivel(position = game.at(0, 0),  image = "fondoNivel2.jpg")
+        game.addVisual(fondo)
+
         const pasto = new Pasto(position = game.at(0, 0))
         game.addVisual(pasto)
         motorFisico.registrar(pasto)
 
         self.agregarPeligro(new Pinche(position = game.at(20, 1)))
+        self.agregarPeligro(new Pinche(position = game.at(26, 1)))
+        self.agregarPeligro(new Pinche(position = game.at(32, 1)))
+        self.agregarPeligro(new Pinche(position = game.at(38, 1)))
+        self.agregarPeligro(new Pinche(position = game.at(44, 1)))
 
         // escalera hacia la bandera (la ultima plataforma queda justo debajo de la meta)
         self.agregarBloque(new Plataforma(position = game.at(8, 4)))
@@ -146,15 +168,18 @@ object nivel2 inherits Nivel(posicionSpawn = game.at(2, 5), posicionMeta = game.
         self.agregarBloque(new Plataforma(position = game.at(39, 9)))
 
         // llaves sobre las plataformas (ahora SI se ven y se pueden agarrar)
-        self.agregarLlaveEn(game.at(16, 8))
-        self.agregarLlaveEn(game.at(32, 10))
+        self.agregarLlavePlateadaEn(game.at(16, 8))
+        self.agregarLlavePlateadaEn(game.at(32, 10))
     }
 }
 
 //agrega Tahiel para ver si funcionan los nuevos obstaculos
-object nivel3 inherits Nivel(posicionSpawn = game.at(2, 5), posicionMeta = game.at(45, 2)) {
+object nivel3 inherits Nivel(posicionSpawn = game.at(2, 5), posicionMeta = game.at(45, 1)) {
 
     override method dibujarEntorno() {
+        const fondo  = new ImagenNivel(position = game.at(0, 0),  image = "fondoNivel3b.png")
+        game.addVisual(fondo)
+
         motorFisico.registrar(new Pasto(position = game.at(0, 0)))
         motorFisico.registrar(new Pasto(position = game.at(30, 0)))
 
@@ -174,7 +199,10 @@ object nivel3 inherits Nivel(posicionSpawn = game.at(2, 5), posicionMeta = game.
         self.agregarBloque(new Plataforma(position = game.at(14, 4)))
         self.agregarBloque(new Plataforma(position = game.at(19, 7)))
 
-        self.agregarBloque(new PisoElevado(position = game.at(23, 11)))
+        self.agregarBloque(new PisoElevado(position = game.at(25, 11)))
+
+        self.agregarBloque(new Muro(position = game.at(46, 11)))
+
 
         const lanzador = new LanzadorDeSierras(position = game.at(26, 12))
         game.addVisual(lanzador)

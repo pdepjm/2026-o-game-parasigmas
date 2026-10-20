@@ -17,7 +17,11 @@ class Llave inherits Objeto {
     method image() = "llave.png" 
 
     override method chocar(unPersonaje) {
-        unPersonaje.agarrarLlave()
+        unPersonaje.agarrarLlave() // Suma 1 al contador numérico del personaje
         super(unPersonaje)
     }
+}
+
+class LlavePlateada inherits Llave {
+    override method image() = "llavePlata.png" // Debes tener esta imagen en tu carpeta assets
 }

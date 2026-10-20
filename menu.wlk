@@ -31,7 +31,7 @@ class OpcionNivel inherits OpcionMenu {
 
     override method image() {
         if (not nivelAsociado.estaDesbloqueado()) {
-            return "btnCandado.png"
+            return "btnCandado2.png"
         }
         return super()
     }
@@ -170,8 +170,9 @@ object menuVictoria {
     var indice = 0
     var opciones = []
 
-    const cartel = new ImagenMenu(position = game.at(15, 15), image = "victoria.png") // 800 x 150
-
+    const fondo = new ImagenMenu(position = game.at(0, 0), image = "fondoVictoria.png")
+    const cartel = new ImagenMenu(position = game.at(17, 14), image = "victoria.png") // 800 x 150
+    
     method opcionSeleccionada() = opciones.get(indice)
 
     method abrir(unNivel) {
@@ -207,6 +208,7 @@ object menuVictoria {
 
     method mostrar() {
         game.clear()
+        game.addVisual(fondo)
         game.addVisual(cartel)
         opciones.forEach({ opcion => game.addVisual(opcion) })
 
@@ -221,20 +223,24 @@ object menuVictoria {
 object menuNiveles {
     var indice = 0
 
+    const titulo = new ImagenMenu(position = game.at(10, 20), image = "seleccionarNivel.png")
+
+    const fondo = new ImagenMenu(position = game.at(0, 0), image = "fondoMenuNivel.png")
+
     const opciones = [
-        new OpcionNivel(menuActual = self, position = game.at(17, 16), imagenNormal = "btnNivel1.png",
+        new OpcionNivel(menuActual = self, position = game.at(17, 14), imagenNormal = "btnNivel1.png",
                        imagenSeleccionada = "btnNivel1Sel.png", nivelAsociado = nivel1, accion = { nivel1.iniciarNivel(); menu.activarJuego() }
         ),
 
-        new OpcionNivel(menuActual = self, position = game.at(17, 12), imagenNormal = "btnNivel2.png",
+        new OpcionNivel(menuActual = self, position = game.at(17, 10), imagenNormal = "btnNivel2.png",
                        imagenSeleccionada = "btnNivel2Sel.png", nivelAsociado = nivel2, accion = { nivel2.iniciarNivel(); menu.activarJuego() }
         ),
 
-        new OpcionNivel(menuActual = self, position = game.at(17, 8), imagenNormal = "btnNivel3.png",
+        new OpcionNivel(menuActual = self, position = game.at(17, 6), imagenNormal = "btnNivel3.png",
                        imagenSeleccionada = "btnNivel3Sel.png", nivelAsociado = nivel3, accion = { nivel3.iniciarNivel(); menu.activarJuego() }
         ),
 
-        new OpcionMenu(menuActual = self, position = game.at(17, 4), imagenNormal = "btnMenu.png",
+        new OpcionMenu(menuActual = self, position = game.at(17, 2), imagenNormal = "btnMenu.png",
                        imagenSeleccionada = "btnMenuSel.png", accion = { menu.mostrar() })
     ]
 
@@ -243,7 +249,8 @@ object menuNiveles {
     method mostrar() {
         indice = 0
         game.clear()
-
+        game.addVisual(fondo)
+        game.addVisual(titulo)
         opciones.forEach({ opcion => game.addVisual(opcion) })
         self.configurarControles()
     }

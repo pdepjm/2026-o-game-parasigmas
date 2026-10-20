@@ -1,5 +1,6 @@
 import wollok.game.*
 import personaje.*
+import niveles.* // Necesario para acceder a la meta y el nivel actual
 
 object configuracionControles {
     
@@ -20,6 +21,12 @@ object configuracionControles {
         keyboard.a().onReleaseDo({personaje.frenarIzquierda()})
 
         keyboard.c().onPressDo({ personaje.centrar() })
+
+        // para pasar el nivel directo
+        keyboard.t().onPressDo({ 
+            if (meta.nivelActual() != null) {
+                meta.nivelActual().victoria()
+            }
+        })
     }
 }
-
