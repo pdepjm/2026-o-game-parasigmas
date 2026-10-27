@@ -29,12 +29,11 @@ class Nivel {
         self.dibujarEntorno() // tiene que ir primero porq si no, el pj esta atras del fondo
         self.configurarSpawn()
         self.configurarMeta()
-        self.dibujarPisoBase()
     }
 
     method dibujarPisoBase() {
-        game.addVisual(new Pasto(position = game.at(0, 0)))
-        game.addVisual(new Pasto(position = game.at(30, 0)))
+        self.agregarBloque(new Pasto(position = game.at(0, 0)))
+        self.agregarBloque(new Pasto(position = game.at(30, 0)))
     }
 
     method configurarSpawn() {
@@ -123,16 +122,12 @@ object nivel1 inherits Nivel(posicionSpawn = game.at(5, 5), posicionMeta = game.
         const fondo  = new ImagenNivel(position = game.at(0, 0),  image = "fondoNivel1.jpg")
         game.addVisual(fondo)
 
+        self.dibujarPisoBase() // se tiene que poner adentro de entorno, porq sino se superponen los pisos y los fondos
+
         // Todo lo que estaba en juego.wpgm ahora esta aca
         self.agregarPeligro(new Pinche(position = game.at(10, 1)))
         self.agregarPeligro(new Sierra(position = game.at(20, 5)))
 
-        const pasto = new Pasto(position = game.at(0,0))
-        const pasto2 = new Pasto(position = game.at(30,0))
-        game.addVisual(pasto)
-        game.addVisual(pasto2)
-        motorFisico.registrar(pasto)
-        motorFisico.registrar(pasto2)
 
         self.agregarBloque(new Muro(position = game.at(30, 1)))
 
@@ -150,14 +145,10 @@ object nivel2 inherits Nivel(posicionSpawn = game.at(2, 5), posicionMeta = game.
         const fondo  = new ImagenNivel(position = game.at(0, 0),  image = "fondoNivel2.jpg")
         game.addVisual(fondo)
 
-        const pasto = new Pasto(position = game.at(0, 0))
-        game.addVisual(pasto)
-        motorFisico.registrar(pasto)
+        self.dibujarPisoBase()
 
         self.agregarPeligro(new Pinche(position = game.at(20, 1)))
-        self.agregarPeligro(new Pinche(position = game.at(26, 1)))
         self.agregarPeligro(new Pinche(position = game.at(32, 1)))
-        self.agregarPeligro(new Pinche(position = game.at(38, 1)))
         self.agregarPeligro(new Pinche(position = game.at(44, 1)))
 
         // escalera hacia la bandera (la ultima plataforma queda justo debajo de la meta)
@@ -179,9 +170,8 @@ object nivel3 inherits Nivel(posicionSpawn = game.at(2, 5), posicionMeta = game.
     override method dibujarEntorno() {
         const fondo  = new ImagenNivel(position = game.at(0, 0),  image = "fondoNivel3b.png")
         game.addVisual(fondo)
-
-        motorFisico.registrar(new Pasto(position = game.at(0, 0)))
-        motorFisico.registrar(new Pasto(position = game.at(30, 0)))
+        
+        self.dibujarPisoBase()
 
         // Zona de barro (y = 0: se dibuja SOBRE el pasto, al ras del piso)
         self.agregarBloque(new BloqueBarro(position = game.at(7, 0)))
@@ -202,7 +192,6 @@ object nivel3 inherits Nivel(posicionSpawn = game.at(2, 5), posicionMeta = game.
         self.agregarBloque(new PisoElevado(position = game.at(25, 11)))
 
         self.agregarBloque(new Muro(position = game.at(46, 11)))
-
 
         const lanzador = new LanzadorDeSierras(position = game.at(26, 12))
         game.addVisual(lanzador)

@@ -23,5 +23,5 @@ class Llave inherits Objeto {
 }
 
 class LlavePlateada inherits Llave {
-    override method image() = "llavePlata.png" // Debes tener esta imagen en tu carpeta assets
+    override method image() = "llavePlata.png"
 }
