@@ -155,6 +155,7 @@ object menu {
     // game.clear() se llevo puestas las teclas, las colisiones y el pulso de la fisica: se revive todo
     method activarJuego() {
         configuracionControles.configurar()
+        keyboard.p().onPressDo({ menuPausa.alternarPausa() })
         game.onCollideDo(personaje, { elemento => elemento.chocar(personaje) })
         game.onTick(25, "bucleFisica", { motorFisico.actualizarFisica(personaje) })
     }
@@ -265,6 +266,110 @@ object menuNiveles {
     }
 
     method seleccionar() { self.opcionSeleccionada().ejecutar() }
+
+    method configurarControles() {
+        keyboard.up().onPressDo({ self.subir() })
+        keyboard.w().onPressDo({ self.subir() })
+        keyboard.down().onPressDo({ self.bajar() })
+        keyboard.s().onPressDo({ self.bajar() })
+        keyboard.enter().onPressDo({ self.seleccionar() })
+    }
+}
+
+object menuPausa {
+    var indice = 0
+    var enPausa = false
+
+    const titulo = new ImagenMenu(position = game.at(9, 20), image = "pausa.jpg")
+
+    const opciones = [
+        new OpcionMenu(
+            menuActual = self,
+            position = game.at(17, 14),
+            imagenNormal = "btnReanudar.png",
+            imagenSeleccionada = "btnReanudarSel.png",
+            accion = { self.reanudar() }
+        ),
+        new OpcionMenu(
+            menuActual = self,
+            position = game.at(17, 10),
+            imagenNormal = "btnReiniciar.png",
+            imagenSeleccionada = "btnReiniciarSel.png",
+            accion = { self.reiniciarPersonaje() }
+        ),
+        new OpcionMenu(
+            menuActual = self,
+            position = game.at(17, 6),
+            imagenNormal = "btnMenu.png",
+            imagenSeleccionada = "btnMenuSel.png",
+            accion = { self.volverAlMenu() }
+        )
+    ]
+
+    method opciones() = opciones
+    method indiceSeleccionado() = indice
+    method opcionSeleccionada() = opciones.get(indice)
+    method enPausa() = enPausa
+
+    method subir() {
+        if (enPausa) {
+            indice = (indice - 1 + opciones.size()) % opciones.size()
+            sonidosMenu.reproducir(sonidosMenu.navegacion())
+        }
+    }
+
+    method bajar() {
+        if (enPausa) {
+            indice = (indice + 1) % opciones.size()
+            sonidosMenu.reproducir(sonidosMenu.navegacion())
+        }
+    }
+
+    method seleccionar() {
+        if (enPausa) {
+            self.opcionSeleccionada().ejecutar()
+            sonidosMenu.reproducir(sonidosMenu.seleccion())
+        }
+    }
+
+    method mostrar() {
+        if (not enPausa) {
+            enPausa = true
+            indice = 0
+            game.removeTickEvent("bucleFisica")
+            game.addVisual(titulo)
+            opciones.forEach({ opcion => game.addVisual(opcion) })
+
+            self.configurarControles()
+        }
+    }
+
+    method ocultarVisuales() {
+        game.removeVisual(titulo)
+        opciones.forEach({ opcion => game.removeVisual(opcion) })
+    }
+
+    method reanudar() {
+        if (enPausa) {
+            enPausa = false
+            self.ocultarVisuales()
+            game.onTick(25, "bucleFisica", { motorFisico.actualizarFisica(personaje) })
+        }
+    }
+
+    method reiniciarPersonaje() {
+        enPausa = false
+        menu.reiniciarNivel()
+    }
+
+    method volverAlMenu() {
+        enPausa = false
+        menu.mostrar()
+    }
+
+    method alternarPausa() {
+        if (enPausa) self.reanudar() else self.mostrar()
+    }
 
     method configurarControles() {
         keyboard.up().onPressDo({ self.subir() })
