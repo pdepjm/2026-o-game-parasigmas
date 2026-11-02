@@ -6,29 +6,36 @@ import paredesPiso.*
 import objetos.*
 import menu.*
 
+
+class ImagenNivel {
+    const property position
+    const property image
+}
+
 class Nivel { 
     const posicionSpawn 
     const posicionMeta
     const property siguienteNivel = null
     const property llavesNecesarias = 1
     var desbloqueado = false
+    const llaves = []
 
     method desbloquearNivel () { desbloqueado = true}
     method estaDesbloqueado() = desbloqueado
 
     method iniciarNivel() {
         game.clear()
-        motorFisico.limpiarBloques()        
+        motorFisico.limpiarBloques()
+        llaves.clear()        
         personaje.detener()
+        self.dibujarEntorno() // tiene que ir primero porq si no, el pj esta atras del fondo
         self.configurarSpawn()
         self.configurarMeta()
-        self.dibujarPisoBase()
-        self.dibujarEntorno()
     }
 
     method dibujarPisoBase() {
-        game.addVisual(new Pasto(position = game.at(0, 0)))
-        game.addVisual(new Pasto(position = game.at(30, 0)))
+        self.agregarBloque(new Pasto(position = game.at(0, 0)))
+        self.agregarBloque(new Pasto(position = game.at(30, 0)))
     }
 
     method configurarSpawn() {
@@ -58,8 +65,24 @@ class Nivel {
 
     method agregarLlaveEn(pos) {
         const llave = new Llave(position = pos)
+        llaves.add(llave)
         game.addVisual(llave)
         motorFisico.registrarInteractuable(llave)
+    }
+
+    method agregarLlavePlateadaEn(pos) {
+        const llave = new LlavePlateada(position = pos)
+        llaves.add(llave)
+        game.addVisual(llave)
+        motorFisico.registrarInteractuable(llave)
+    }
+
+    method reponerLlaves() {
+        llaves.forEach({ llave => if (!game.hasVisual(llave)) { // si el personaje no la agarró
+                game.addVisual(llave)
+                motorFisico.registrarInteractuable(llave)
+            }
+        })
     }
 
     // Al llegar a la meta SIEMPRE se muestra el menu de victoria:
@@ -108,16 +131,15 @@ object nivel1 inherits Nivel(posicionSpawn = game.at(5, 5), posicionMeta = game.
     override method estaDesbloqueado() = true // El primer nivel siempre está desbloqueado
     
     override method dibujarEntorno() {
+        const fondo  = new ImagenNivel(position = game.at(0, 0),  image = "fondoNivel1.jpg")
+        game.addVisual(fondo)
+
+        self.dibujarPisoBase() // se tiene que poner adentro de entorno, porq sino se superponen los pisos y los fondos
+
         // Todo lo que estaba en juego.wpgm ahora esta aca
         self.agregarPeligro(new Pinche(position = game.at(10, 1)))
         self.agregarPeligro(new Sierra(position = game.at(20, 5)))
 
-        const pasto = new Pasto(position = game.at(0,0))
-        const pasto2 = new Pasto(position = game.at(30,0))
-        game.addVisual(pasto)
-        game.addVisual(pasto2)
-        motorFisico.registrar(pasto)
-        motorFisico.registrar(pasto2)
 
         self.agregarBloque(new Muro(position = game.at(30, 1)))
 
@@ -132,11 +154,14 @@ object nivel1 inherits Nivel(posicionSpawn = game.at(5, 5), posicionMeta = game.
 object nivel2 inherits Nivel(posicionSpawn = game.at(2, 5), posicionMeta = game.at(40, 10), llavesNecesarias = 2, siguienteNivel = nivel3) {
     
     override method dibujarEntorno() {
-        const pasto = new Pasto(position = game.at(0, 0))
-        game.addVisual(pasto)
-        motorFisico.registrar(pasto)
+        const fondo  = new ImagenNivel(position = game.at(0, 0),  image = "fondoNivel2.jpg")
+        game.addVisual(fondo)
+
+        self.dibujarPisoBase()
 
         self.agregarPeligro(new Pinche(position = game.at(20, 1)))
+        self.agregarPeligro(new Pinche(position = game.at(32, 1)))
+        self.agregarPeligro(new Pinche(position = game.at(44, 1)))
 
         // escalera hacia la bandera (la ultima plataforma queda justo debajo de la meta)
         self.agregarBloque(new Plataforma(position = game.at(8, 4)))
@@ -146,17 +171,19 @@ object nivel2 inherits Nivel(posicionSpawn = game.at(2, 5), posicionMeta = game.
         self.agregarBloque(new Plataforma(position = game.at(39, 9)))
 
         // llaves sobre las plataformas (ahora SI se ven y se pueden agarrar)
-        self.agregarLlaveEn(game.at(16, 8))
-        self.agregarLlaveEn(game.at(32, 10))
+        self.agregarLlavePlateadaEn(game.at(16, 8))
+        self.agregarLlavePlateadaEn(game.at(32, 10))
     }
 }
 
 //agrega Tahiel para ver si funcionan los nuevos obstaculos
-object nivel3 inherits Nivel(posicionSpawn = game.at(2, 5), posicionMeta = game.at(45, 2)) {
+object nivel3 inherits Nivel(posicionSpawn = game.at(2, 5), posicionMeta = game.at(45, 1)) {
 
     override method dibujarEntorno() {
-        motorFisico.registrar(new Pasto(position = game.at(0, 0)))
-        motorFisico.registrar(new Pasto(position = game.at(30, 0)))
+        const fondo  = new ImagenNivel(position = game.at(0, 0),  image = "fondoNivel3b.png")
+        game.addVisual(fondo)
+        
+        self.dibujarPisoBase()
 
         // Zona de barro (y = 0: se dibuja SOBRE el pasto, al ras del piso)
         self.agregarBloque(new BloqueBarro(position = game.at(7, 0)))
@@ -174,7 +201,9 @@ object nivel3 inherits Nivel(posicionSpawn = game.at(2, 5), posicionMeta = game.
         self.agregarBloque(new Plataforma(position = game.at(14, 4)))
         self.agregarBloque(new Plataforma(position = game.at(19, 7)))
 
-        self.agregarBloque(new PisoElevado(position = game.at(23, 11)))
+        self.agregarBloque(new PisoElevado(position = game.at(25, 11)))
+
+        self.agregarBloque(new Muro(position = game.at(46, 11)))
 
         const lanzador = new LanzadorDeSierras(position = game.at(26, 12))
         game.addVisual(lanzador)

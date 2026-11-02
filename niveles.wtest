@@ -54,6 +54,10 @@ describe "fisicas" {
 
 describe "interacciones" {
     test "tocar una sierra reinicia la posición del personaje" {
+        //si muere el personaje y no hay nivel actual da error, morir() hace meta.nivelActual().reponerLlaves()
+        const nivelPrueba = new Nivel(posicionSpawn = game.at(2, 1), posicionMeta = game.at(15, 5))
+        meta.nivelActual(nivelPrueba)
+
         const sierra = new Sierra(position = game.at(15, 1))
         personaje.posicionInicial(game.at(5, 5))
         personaje.irA(game.at(15, 1))
@@ -70,5 +74,20 @@ describe "interacciones" {
         personaje.avanzarDerecha()
         motorFisico.actualizarFisica(personaje)
         assert.equals(0, personaje.vx())
+    }
+
+    test "al morir se reinician las llaves" {
+        const nivelPrueba = new Nivel(posicionSpawn = game.at(2, 1), posicionMeta = game.at(15, 5))
+        meta.nivelActual(nivelPrueba)
+
+        personaje.agarrarLlave()
+        personaje.agarrarLlave()
+        
+        assert.equals(2, personaje.cantidadLlaves()) 
+
+        personaje.morir()
+
+        assert.equals(0, personaje.cantidadLlaves())
+
     }
 }

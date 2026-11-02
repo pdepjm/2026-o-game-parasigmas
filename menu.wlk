@@ -31,7 +31,7 @@ class OpcionNivel inherits OpcionMenu {
 
     override method image() {
         if (not nivelAsociado.estaDesbloqueado()) {
-            return "btnCandado.png"
+            return "btnCandado2.png"
         }
         return super()
     }
@@ -155,6 +155,7 @@ object menu {
     // game.clear() se llevo puestas las teclas, las colisiones y el pulso de la fisica: se revive todo
     method activarJuego() {
         configuracionControles.configurar()
+        keyboard.p().onPressDo({ menuPausa.alternarPausa() })
         game.onCollideDo(personaje, { elemento => elemento.chocar(personaje) })
         game.onTick(25, "bucleFisica", { motorFisico.actualizarFisica(personaje) })
     }
@@ -170,8 +171,9 @@ object menuVictoria {
     var indice = 0
     var opciones = []
 
-    const cartel = new ImagenMenu(position = game.at(15, 15), image = "victoria.png") // 800 x 150
-
+    const fondo = new ImagenMenu(position = game.at(0, 0), image = "fondoVictoria.png")
+    const cartel = new ImagenMenu(position = game.at(17, 14), image = "victoria.png") // 800 x 150
+    
     method opcionSeleccionada() = opciones.get(indice)
 
     method abrir(unNivel) {
@@ -207,6 +209,7 @@ object menuVictoria {
 
     method mostrar() {
         game.clear()
+        game.addVisual(fondo)
         game.addVisual(cartel)
         opciones.forEach({ opcion => game.addVisual(opcion) })
 
@@ -221,20 +224,24 @@ object menuVictoria {
 object menuNiveles {
     var indice = 0
 
+    const titulo = new ImagenMenu(position = game.at(10, 20), image = "seleccionarNivel.png")
+
+    const fondo = new ImagenMenu(position = game.at(0, 0), image = "fondoMenuNivel.png")
+
     const opciones = [
-        new OpcionNivel(menuActual = self, position = game.at(17, 16), imagenNormal = "btnNivel1.png",
+        new OpcionNivel(menuActual = self, position = game.at(17, 14), imagenNormal = "btnNivel1.png",
                        imagenSeleccionada = "btnNivel1Sel.png", nivelAsociado = nivel1, accion = { nivel1.iniciarNivel(); menu.activarJuego() }
         ),
 
-        new OpcionNivel(menuActual = self, position = game.at(17, 12), imagenNormal = "btnNivel2.png",
+        new OpcionNivel(menuActual = self, position = game.at(17, 10), imagenNormal = "btnNivel2.png",
                        imagenSeleccionada = "btnNivel2Sel.png", nivelAsociado = nivel2, accion = { nivel2.iniciarNivel(); menu.activarJuego() }
         ),
 
-        new OpcionNivel(menuActual = self, position = game.at(17, 8), imagenNormal = "btnNivel3.png",
+        new OpcionNivel(menuActual = self, position = game.at(17, 6), imagenNormal = "btnNivel3.png",
                        imagenSeleccionada = "btnNivel3Sel.png", nivelAsociado = nivel3, accion = { nivel3.iniciarNivel(); menu.activarJuego() }
         ),
 
-        new OpcionMenu(menuActual = self, position = game.at(17, 4), imagenNormal = "btnMenu.png",
+        new OpcionMenu(menuActual = self, position = game.at(17, 2), imagenNormal = "btnMenu.png",
                        imagenSeleccionada = "btnMenuSel.png", accion = { menu.mostrar() })
     ]
 
@@ -243,7 +250,8 @@ object menuNiveles {
     method mostrar() {
         indice = 0
         game.clear()
-
+        game.addVisual(fondo)
+        game.addVisual(titulo)
         opciones.forEach({ opcion => game.addVisual(opcion) })
         self.configurarControles()
     }
@@ -258,6 +266,110 @@ object menuNiveles {
     }
 
     method seleccionar() { self.opcionSeleccionada().ejecutar() }
+
+    method configurarControles() {
+        keyboard.up().onPressDo({ self.subir() })
+        keyboard.w().onPressDo({ self.subir() })
+        keyboard.down().onPressDo({ self.bajar() })
+        keyboard.s().onPressDo({ self.bajar() })
+        keyboard.enter().onPressDo({ self.seleccionar() })
+    }
+}
+
+object menuPausa {
+    var indice = 0
+    var enPausa = false
+
+    const titulo = new ImagenMenu(position = game.at(9, 20), image = "pausa.jpg")
+
+    const opciones = [
+        new OpcionMenu(
+            menuActual = self,
+            position = game.at(17, 14),
+            imagenNormal = "btnReanudar.png",
+            imagenSeleccionada = "btnReanudarSel.png",
+            accion = { self.reanudar() }
+        ),
+        new OpcionMenu(
+            menuActual = self,
+            position = game.at(17, 10),
+            imagenNormal = "btnReiniciar.png",
+            imagenSeleccionada = "btnReiniciarSel.png",
+            accion = { self.reiniciarPersonaje() }
+        ),
+        new OpcionMenu(
+            menuActual = self,
+            position = game.at(17, 6),
+            imagenNormal = "btnMenu.png",
+            imagenSeleccionada = "btnMenuSel.png",
+            accion = { self.volverAlMenu() }
+        )
+    ]
+
+    method opciones() = opciones
+    method indiceSeleccionado() = indice
+    method opcionSeleccionada() = opciones.get(indice)
+    method enPausa() = enPausa
+
+    method subir() {
+        if (enPausa) {
+            indice = (indice - 1 + opciones.size()) % opciones.size()
+            sonidosMenu.reproducir(sonidosMenu.navegacion())
+        }
+    }
+
+    method bajar() {
+        if (enPausa) {
+            indice = (indice + 1) % opciones.size()
+            sonidosMenu.reproducir(sonidosMenu.navegacion())
+        }
+    }
+
+    method seleccionar() {
+        if (enPausa) {
+            self.opcionSeleccionada().ejecutar()
+            sonidosMenu.reproducir(sonidosMenu.seleccion())
+        }
+    }
+
+    method mostrar() {
+        if (not enPausa) {
+            enPausa = true
+            indice = 0
+            game.removeTickEvent("bucleFisica")
+            game.addVisual(titulo)
+            opciones.forEach({ opcion => game.addVisual(opcion) })
+
+            self.configurarControles()
+        }
+    }
+
+    method ocultarVisuales() {
+        game.removeVisual(titulo)
+        opciones.forEach({ opcion => game.removeVisual(opcion) })
+    }
+
+    method reanudar() {
+        if (enPausa) {
+            enPausa = false
+            self.ocultarVisuales()
+            game.onTick(25, "bucleFisica", { motorFisico.actualizarFisica(personaje) })
+        }
+    }
+
+    method reiniciarPersonaje() {
+        enPausa = false
+        menu.reiniciarNivel()
+    }
+
+    method volverAlMenu() {
+        enPausa = false
+        menu.mostrar()
+    }
+
+    method alternarPausa() {
+        if (enPausa) self.reanudar() else self.mostrar()
+    }
 
     method configurarControles() {
         keyboard.up().onPressDo({ self.subir() })
