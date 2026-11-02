@@ -18,13 +18,15 @@ class Nivel {
     const property siguienteNivel = null
     const property llavesNecesarias = 1
     var desbloqueado = false
+    const llaves = []
 
     method desbloquearNivel () { desbloqueado = true}
     method estaDesbloqueado() = desbloqueado
 
     method iniciarNivel() {
         game.clear()
-        motorFisico.limpiarBloques()        
+        motorFisico.limpiarBloques()
+        llaves.clear()        
         personaje.detener()
         self.dibujarEntorno() // tiene que ir primero porq si no, el pj esta atras del fondo
         self.configurarSpawn()
@@ -63,14 +65,24 @@ class Nivel {
 
     method agregarLlaveEn(pos) {
         const llave = new Llave(position = pos)
+        llaves.add(llave)
         game.addVisual(llave)
         motorFisico.registrarInteractuable(llave)
     }
 
     method agregarLlavePlateadaEn(pos) {
         const llave = new LlavePlateada(position = pos)
+        llaves.add(llave)
         game.addVisual(llave)
         motorFisico.registrarInteractuable(llave)
+    }
+
+    method reponerLlaves() {
+        llaves.forEach({ llave => if (!game.hasVisual(llave)) { // si el personaje no la agarró
+                game.addVisual(llave)
+                motorFisico.registrarInteractuable(llave)
+            }
+        })
     }
 
     // Al llegar a la meta SIEMPRE se muestra el menu de victoria:

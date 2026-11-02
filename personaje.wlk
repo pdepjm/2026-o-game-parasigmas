@@ -1,6 +1,7 @@
 import motorfisico.*
 import wollok.game.*
 import menu.*
+import niveles.*
 
 object personaje {
     
@@ -82,7 +83,9 @@ object personaje {
     }
 
     method morir() {
+        self.reiniciarLlaves()
         self.irA(posicionInicial)
+        meta.nivelActual().reponerLlaves()
     }
 
     method pisarHielo() {  
