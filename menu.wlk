@@ -79,7 +79,7 @@ object menu {
     ]
 
     var indice = 0
-    var nivelAJugar = null
+    var nivelAJugar = null //corregir
 
     // getters (los usan las opciones y los tests)
     method opciones() = opciones
@@ -183,7 +183,7 @@ object menuVictoria {
 
         if (unNivel.siguienteNivel() != null) {
             opciones.add(new OpcionMenu(menuActual = self, position = game.at(17, 10), imagenNormal = "btnSiguiente.png",
-                                        imagenSeleccionada = "btnSiguienteSel.png", accion = { unNivel.irAlSiguiente() }))
+                                        imagenSeleccionada = "btnSiguienteSel.png", accion = {unNivel.irAlSiguiente() }))
         }
 
         opciones.add(new OpcionMenu(menuActual = self, position = game.at(17, 5), imagenNormal = "btnMenu.png",
@@ -295,7 +295,7 @@ object menuPausa {
             position = game.at(17, 10),
             imagenNormal = "btnReiniciar.png",
             imagenSeleccionada = "btnReiniciarSel.png",
-            accion = { self.reiniciarPersonaje() }
+            accion = { self.reanudar() ; personaje.morir() }
         ),
         new OpcionMenu(
             menuActual = self,
@@ -317,7 +317,7 @@ object menuPausa {
             sonidosMenu.reproducir(sonidosMenu.navegacion())
         }
     }
-
+    // maximo
     method bajar() {
         if (enPausa) {
             indice = (indice + 1) % opciones.size()
