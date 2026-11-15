@@ -10,8 +10,9 @@ class BloqueSolido {
 
     method chocar(personaje) {}
     
+    method superficie() = pasto
     method aplicarEfectoSuperficie(personaje) {
-        personaje.pisarPasto()
+        personaje.pisar(self.superficie())
     }
 }
 
@@ -44,9 +45,7 @@ class BloqueHielo inherits BloqueSolido {
     override method xDerecho() = position.x() + 4
     override method yTecho()   = position.y() + 1
 
-    override method aplicarEfectoSuperficie(personaje) {
-        personaje.pisarHielo()
-    }
+    override method superficie() = hielo
 }
 
 class BloqueBarro inherits BloqueSolido {
@@ -54,9 +53,7 @@ class BloqueBarro inherits BloqueSolido {
     override method xDerecho() = position.x() + 4
     override method yTecho()   = position.y() + 1
 
-    override method aplicarEfectoSuperficie(personaje) {
-        personaje.pisarBarro()
-    }
+    override method superficie() = barro
 }
 
 class Piso inherits BloqueSolido {
@@ -66,8 +63,23 @@ class Piso inherits BloqueSolido {
 
 class Pasto inherits Piso {
     method image() = "pisoPasto.png"
-    
-    override method aplicarEfectoSuperficie(personaje) {
-        personaje.pisarPasto()
-    }
+}
+
+object pasto {
+    method esHielo() = false
+    method friccion() = 0.85
+    method aceleracion() = 0.24
+    method velMaximaX() = 0.6
+}
+object hielo {
+    method esHielo() = true
+    method friccion() = 0.98
+    method aceleracion() = 0.08
+    method velMaximaX() = 0.65
+}
+object barro {
+    method esHielo() = false
+    method friccion() = 0.40
+    method aceleracion() = 0.08
+    method velMaximaX() = 0.20
 }

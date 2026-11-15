@@ -2,6 +2,7 @@ import motorfisico.*
 import wollok.game.*
 import menu.*
 import niveles.*
+import paredesPiso.*
 
 object personaje {
     
@@ -61,12 +62,12 @@ object personaje {
         vx = 0.0
         vy = 0.0
         position = game.at(5, 5)        
-        self.pisarPasto()
+        self.pisar(pasto)
     }
 
     method irA(nuevaPosicion) {
         motorFisico.irA(nuevaPosicion, self)
-        self.pisarPasto()
+        self.pisar(pasto)
     }
 
     // llave
@@ -88,24 +89,10 @@ object personaje {
         meta.nivelActual().reponerLlaves()
     }
 
-    method pisarHielo() {  
-        enHielo = true
-        friccionSuelo = 0.98    
-        aceleracionSuelo = 0.08 
-        velMaximaX = 0.65
-    }
-
-    method pisarBarro() {
-        enHielo = false
-        friccionSuelo = 0.40    
-        aceleracionSuelo = 0.08 
-        velMaximaX = 0.20       
-    }
-
-    method pisarPasto() { 
-        enHielo = false
-        friccionSuelo = 0.85    
-        aceleracionSuelo = 0.24 
-        velMaximaX = 0.6
+    method pisar(superficie) {
+        enHielo = superficie.esHielo()
+        friccionSuelo = superficie.friccion()
+        aceleracionSuelo = superficie.aceleracion()
+        velMaximaX = superficie.velMaximaX()
     }
 }

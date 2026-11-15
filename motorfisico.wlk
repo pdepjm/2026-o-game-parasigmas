@@ -1,5 +1,6 @@
 import personaje.*
 import wollok.game.*
+import paredesPiso.*
 
 object motorFisico {
     const gravedad = -0.15
@@ -83,7 +84,7 @@ object motorFisico {
         
         //COLISIONES EN Y 
         personaje.estaApoyado(false)
-        personaje.pisarPasto() 
+        personaje.pisar(pasto) 
         personaje.vy(personaje.vy() + gravedad)
         const futuroY = personaje.yReal() + personaje.vy()
 
