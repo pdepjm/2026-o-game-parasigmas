@@ -20,11 +20,11 @@ object personaje {
     var property yendoIzquierda = false
     var property enHielo = false
     
-    const gravedad = -0.15       
+    //const gravedad = -0.15       
     var aceleracionSuelo = 0.24 
     const aceleracionAire = 0.12  
     var friccionSuelo = 0.85 
-    const friccionAire = 0.95     
+    //const friccionAire = 0.95     
     const impulsoSalto = 1.5     
     var velMaximaX = 0.6
     const anchoPersonaje = 3 

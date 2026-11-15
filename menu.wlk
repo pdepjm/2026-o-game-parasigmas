@@ -181,7 +181,7 @@ object menuVictoria {
         indice = 0
         opciones = []
 
-        if (unNivel.siguienteNivel() != null) {
+        if (unNivel.siguienteNivel().existe()) {
             opciones.add(new OpcionMenu(menuActual = self, position = game.at(17, 10), imagenNormal = "btnSiguiente.png",
                                         imagenSeleccionada = "btnSiguienteSel.png", accion = { unNivel.irAlSiguiente() }))
         }
@@ -295,7 +295,7 @@ object menuPausa {
             position = game.at(17, 10),
             imagenNormal = "btnReiniciar.png",
             imagenSeleccionada = "btnReiniciarSel.png",
-            accion = { self.reiniciarPersonaje() }
+            accion = { self.reanudar() ; personaje.morir() }
         ),
         new OpcionMenu(
             menuActual = self,

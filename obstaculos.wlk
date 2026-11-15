@@ -56,7 +56,7 @@ class BloqueAplastante inherits Obstaculo {
             position = game.at(position.x(), (position.y() + 1).min(yArriba))  // sube lento
             if (position.y() == yArriba) {
                 bajando = true
-                espera = 12       // se queda arriba 1.2 s
+                espera = 16       // se queda arriba 1.6 s
             }
         }
     }

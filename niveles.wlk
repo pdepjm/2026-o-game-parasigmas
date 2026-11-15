@@ -15,13 +15,15 @@ class ImagenNivel {
 class Nivel { 
     const posicionSpawn 
     const posicionMeta
-    const property siguienteNivel = null
+    const property siguienteNivel = sinSiguienteNivel
     const property llavesNecesarias = 1
     var desbloqueado = false
     const llaves = []
+    method existe() = true
 
     method desbloquearNivel () { desbloqueado = true}
     method estaDesbloqueado() = desbloqueado
+    
 
     method iniciarNivel() {
         game.clear()
@@ -94,19 +96,17 @@ class Nivel {
     method dibujarEntorno() {}
 
     method victoria() {
-        if (siguienteNivel != null) {
-                siguienteNivel.desbloquearNivel()
-            }
+        siguienteNivel.desbloquearNivel()
         menuVictoria.abrir(self)
     }
 
     method irAlSiguiente() {
-        if (siguienteNivel != null) {
-            siguienteNivel.iniciarNivel()
-            menu.activarJuego()
-        } else {
-            menu.mostrar()
-        }
+       siguienteNivel.iniciarComoSiguiente()
+    }
+
+    method iniciarComoSiguiente() {
+        self.iniciarNivel()
+        menu.activarJuego()
     }
 }
 
@@ -210,5 +210,14 @@ object nivel3 inherits Nivel(posicionSpawn = game.at(2, 5), posicionMeta = game.
         lanzador.activar()
 
         self.agregarLlaveEn(game.at(40, 12))
+    }
+}
+
+// nivel vacio
+object sinSiguienteNivel {
+    method existe() = false
+    method desbloquearNivel() {}
+    method iniciarComoSiguiente() {
+        menu.mostrar() // si no hay siguiente nivel, vuelve al menu
     }
 }
