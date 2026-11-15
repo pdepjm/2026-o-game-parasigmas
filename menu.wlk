@@ -278,7 +278,7 @@ object menuNiveles {
 
 object menuPausa {
     var indice = 0
-    var enPausa = false
+    var estado = jugando
 
     const titulo = new ImagenMenu(position = game.at(9, 20), image = "pausa.jpg")
 
@@ -309,39 +309,44 @@ object menuPausa {
     method opciones() = opciones
     method indiceSeleccionado() = indice
     method opcionSeleccionada() = opciones.get(indice)
-    method enPausa() = enPausa
+    method enPausa() = estado.estaPausado()
 
     method subir() {
-        if (enPausa) {
-            indice = (indice - 1 + opciones.size()) % opciones.size()
-            sonidosMenu.reproducir(sonidosMenu.navegacion())
-        }
+        estado.subir(self)
     }
 
     method bajar() {
-        if (enPausa) {
-            indice = (indice + 1) % opciones.size()
-            sonidosMenu.reproducir(sonidosMenu.navegacion())
-        }
+        estado.bajar(self)
     }
 
     method seleccionar() {
-        if (enPausa) {
-            self.opcionSeleccionada().ejecutar()
-            sonidosMenu.reproducir(sonidosMenu.seleccion())
-        }
+        estado.seleccionar(self)
+    }
+
+    method moverArriba() {
+        indice = (indice - 1 + opciones.size()) % opciones.size()
+        sonidosMenu.reproducir(sonidosMenu.navegacion())
+    }
+    method moverAbajo() {
+        indice = (indice + 1) % opciones.size()
+        sonidosMenu.reproducir(sonidosMenu.navegacion())
+    }
+    method ejecutarSeleccion() {
+        self.opcionSeleccionada().ejecutar()
+        sonidosMenu.reproducir(sonidosMenu.seleccion())
+    }
+
+    method pausar() {
+        estado = pausado
+        indice = 0
+        game.removeTickEvent("bucleFisica")
+        game.addVisual(titulo)
+        opciones.forEach({ opcion => game.addVisual(opcion) })
+        self.configurarControles()
     }
 
     method mostrar() {
-        if (not enPausa) {
-            enPausa = true
-            indice = 0
-            game.removeTickEvent("bucleFisica")
-            game.addVisual(titulo)
-            opciones.forEach({ opcion => game.addVisual(opcion) })
-
-            self.configurarControles()
-        }
+        self.pausar()
     }
 
     method ocultarVisuales() {
@@ -350,25 +355,23 @@ object menuPausa {
     }
 
     method reanudar() {
-        if (enPausa) {
-            enPausa = false
-            self.ocultarVisuales()
-            game.onTick(25, "bucleFisica", { motorFisico.actualizarFisica(personaje) })
-        }
+        estado = jugando
+        self.ocultarVisuales()
+        game.onTick(25, "bucleFisica", { motorFisico.actualizarFisica(personaje) })
     }
 
     method reiniciarPersonaje() {
-        enPausa = false
+        estado = jugando
         menu.reiniciarNivel()
     }
 
     method volverAlMenu() {
-        enPausa = false
+        estado = jugando
         menu.mostrar()
     }
 
     method alternarPausa() {
-        if (enPausa) self.reanudar() else self.mostrar()
+        estado.alternar(self)
     }
 
     method configurarControles() {
@@ -378,4 +381,22 @@ object menuPausa {
         keyboard.s().onPressDo({ self.bajar() })
         keyboard.enter().onPressDo({ self.seleccionar() })
     }
+}
+
+// objetos "estado" de menú para no usar flags
+
+object jugando {
+    method estaPausado() = false
+    method subir(menu) {}
+    method bajar(menu) {}
+    method seleccionar(menu) {}
+    method alternar(menu) { menu.pausar() }
+}
+
+object pausado {
+    method estaPausado() = true
+    method subir(menu) { menu.moverArriba() }
+    method bajar(menu) { menu.moverAbajo() }
+    method seleccionar(menu) { menu.ejecutarSeleccion() }
+    method alternar(menu) { menu.reanudar() }
 }
