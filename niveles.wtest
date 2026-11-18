@@ -1,0 +1,93 @@
+import paredesPiso.*
+import motorfisico.*
+import wollok.game.*
+import niveles.*
+import personaje.*
+import obstaculos.*
+
+describe "Tests de la base de niveles" {
+    
+    const nivelPrueba = new Nivel(
+        posicionSpawn = game.at(2, 1),
+        posicionMeta = game.at(15, 5)
+    )
+
+    test "Al configurar el spawn, el jugador se ubica exactamente en la posicion inicial del nivel" {
+        nivelPrueba.configurarSpawn()
+        motorFisico.actualizarFisica(personaje)
+        
+        assert.equals(game.at(2, 1), personaje.position())
+    }
+
+    test "Al configurar la meta, esta se ubica en la posicion designada" {
+        nivelPrueba.configurarMeta()
+        assert.equals(game.at(15, 5), meta.position())
+    }
+}   
+
+describe "fisicas" {
+    
+    test "el personaje es afectado por la gravedad" {
+        personaje.irA(game.at(10, 20))
+        motorFisico.actualizarFisica(personaje) 
+        
+        assert.equals(20 + motorFisico.gravedad(), personaje.yReal()) 
+    }
+
+    test "el salto aumenta la velocidad en y" {
+        personaje.irA(game.at(10, motorFisico.nivelSuelo()))
+        personaje.saltar()
+        assert.equals(personaje.impulsoSalto(), personaje.vy())
+    }
+
+    test "el personaje avanza correctamente" {
+        game.width(50)
+        personaje.irA(game.at(5, motorFisico.nivelSuelo()))
+
+        const vx = personaje.vx()
+        personaje.avanzarDerecha()
+        motorFisico.actualizarFisica(personaje)
+
+        assert.notEquals(vx, personaje.vx())
+    }
+}
+
+describe "interacciones" {
+    test "tocar una sierra reinicia la posición del personaje" {
+        //si muere el personaje y no hay nivel actual da error, morir() hace meta.nivelActual().reponerLlaves()
+        const nivelPrueba = new Nivel(posicionSpawn = game.at(2, 1), posicionMeta = game.at(15, 5))
+        meta.nivelActual(nivelPrueba)
+
+        const sierra = new Sierra(position = game.at(15, 1))
+        personaje.posicionInicial(game.at(5, 5))
+        personaje.irA(game.at(15, 1))
+        
+        sierra.chocar(personaje) 
+        
+        assert.equals(5.0, personaje.xReal()) 
+    }
+
+    test "chocar con un muro frena al personaje" {
+        const muro = new Muro(position = game.at(30, 1))
+        motorFisico.registrar(muro)
+        personaje.irA(game.at(27, 1))
+        personaje.avanzarDerecha()
+        motorFisico.actualizarFisica(personaje)
+        assert.equals(0, personaje.vx())
+    }
+
+    test "al morir se reinician las llaves" {
+        const nivelPrueba = new Nivel(posicionSpawn = game.at(2, 1), posicionMeta = game.at(15, 5))
+        meta.nivelActual(nivelPrueba)
+
+        personaje.agarrarLlave()
+        personaje.agarrarLlave()
+        
+        assert.equals(2, personaje.cantidadLlaves()) 
+
+        personaje.morir()
+
+        assert.equals(0, personaje.cantidadLlaves())
+
+    }
+}
